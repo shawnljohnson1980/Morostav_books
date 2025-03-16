@@ -1,0 +1,12 @@
+{% autoescape off %}
+Hello {{ user.username }},
+
+You requested a password reset. Click the link below to reset your password:
+
+{{ protocol }}://{{ domain }}{% url 'password_reset_confirm' uidb64=uid token=token %}
+
+If you did not request this, you can safely ignore this email.
+
+Thank you,  
+Morostav Books Team
+{% endautoescape %}

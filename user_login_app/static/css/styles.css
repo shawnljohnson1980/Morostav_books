@@ -1,0 +1,17 @@
+.border-rider {
+  position: absolute;
+  top: 0px;
+  margin-top: -12px;
+  background-color: rgba(255, 255, 255, 0);
+}
+
+form {
+  background-color: rgba(11, 51, 191, 0.01);
+}
+
+body {
+  background: url("/static/img/m_k..webp") 50% 0 no-repeat fixed;
+  color: white;
+  background-size: cover;
+  padding: 100px 0 0 0;
+}

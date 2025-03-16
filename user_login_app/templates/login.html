@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+    <title>Login and Registration</title>
+    {% load static %}
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="icon" type="image/x-icon" href="{% static 'img/favicon.webp' %}">
+    <link rel="stylesheet" href="{% static '/css/forms.css' %}"/>
+</head>
+<body>
+    <nav class="navbar navbar-dark bg-dark navbar-expand-md shadow">
+        <div class="container-fluid">
+            <a class="navbar-brand text-white" href="/">Welcome to Morostav Books</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navcol-1">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navcol-1">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link text-white" href="/">Home</a></li>
+                    <li class="nav-item"><a class="nav-link text-white" href="/login">Login</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <div style="height: 425px;"></div>  
+    <div class="form-container">
+            <h1 class="shadow"></h1>
+            <form class="border-dark shadow p-3 login-container" action="/user/log_in" method="POST">
+                    {% csrf_token %}
+                    {% for message in messages %}
+                    <p>{{ message }}</p>
+                    {% endfor %}
+                    <p class="text-white border-rider"> Log in</p>
+                    <div class="form-group"><label style="color: rgba(80, 43, 128, 0.6);">Email</label><input class="form-control" type="email"
+                            placeholder="Email Address" name="email"></div>
+                    <div class="form-group"><label style="color: rgba(80, 43, 128, 0.9);">Password</label><input class="form-control" type="password"
+                            placeholder="Password" name="password"></div>
+                    <div class="form-group text-right"><button class="btn text-white" style="margin-top:29px; background: rgba(80, 43, 128, 0.6);" type="submit">Login</button>
+                    </div>
+                    <a href="user/reset" class="forgot-password" style="color: rgba(246, 240, 247, 0.6);">Forgot your password?</a>
+                </form>
+            </div>
+        </div>
+    </div>
+            <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" 
+            integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" 
+            crossorigin="anonymous"></script>
+</body>
+
+</html>

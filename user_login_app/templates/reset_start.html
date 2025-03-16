@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reset Password</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static '/bootstrap/css/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static '/css/forms.css' %}">
+</head>
+<body>
+    <nav class="navbar navbar-dark bg-dark navbar-expand-md shadow">
+        <div class="container-fluid">
+            <a class="navbar-brand text-white" href="/"> Morostav Books</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navcol-1">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navcol-1">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link text-white" href="/">Home</a></li>
+                    <li class="nav-item"><a class="nav-link text-white" href="/login">Login</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <div class="form-container">
+        <form method="POST" action="{% url '/user/password_reset' %}">
+            {% csrf_token %}
+            <h2>Reset Your Password</h2>
+            <p>Enter your email address and we'll send you a link to reset your password.</p>
+            
+            <div class="form-group">
+                <label>Email Address</label>
+                <input type="email" class="form-control" name="email" placeholder="Enter your email" required>
+            </div>
+
+            <button class="btn text-white" style="background: rgba(80, 43, 128, 0.6);" type="submit">
+                Send Reset Link
+            </button>
+
+            <a class="forgot-password" href="{% url 'user/login' %}">Back to Login</a>
+        </form>
+    </div>
+</body>
+</html>
