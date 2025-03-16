@@ -1,0 +1,55 @@
+{% autoescape off %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>New Contact Form Submission</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: url("{{ protocol }}://{{ domain }}{% static 'img/email_bg.png' %}") no-repeat center center;
+            background-size: cover;
+            color: #333;
+            text-align: center;
+            padding: 20px;
+        }
+        .email-container {
+            max-width: 600px;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 20px;
+            border-radius: 10px;
+            margin: auto;
+        }
+        .btn {
+            display: inline-block;
+            padding: 12px 24px;
+            background: #502b80;
+            color: #fff;
+            text-decoration: none;
+            border-radius: 6px;
+            margin-top: 10px;
+        }
+        .message-box {
+            background: #f5f5f5;
+            padding: 10px;
+            border-left: 4px solid #502b80;
+            text-align: left;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="email-container">
+        <h2>New Contact Form Submission</h2>
+        <p><strong>From:</strong> {{ name }} ({{ email }})</p>
+        <p><strong>Subject:</strong> {{ subject }}</p>
+        <div class="message-box">
+            <p>{{ message }}</p>
+        </div>
+        <p>Reply directly to <a href="mailto:{{ email }}">{{ email }}</a></p>
+        <p>Thank you,<br><strong>Morostav Books Team</strong></p>
+    </div>
+</body>
+</html>
+{% endautoescape %}

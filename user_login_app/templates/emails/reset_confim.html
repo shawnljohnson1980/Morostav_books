@@ -1,0 +1,48 @@
+
+{% autoescape off %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Password Reset Successful</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: url("{{ protocol }}://{{ domain }}{% static 'img/email_bg.png' %}") no-repeat center center;
+            background-size: cover;
+            color: #333;
+            text-align: center;
+            padding: 20px;
+        }
+        .email-container {
+            max-width: 600px;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 20px;
+            border-radius: 10px;
+            margin: auto;
+        }
+        .btn {
+            display: inline-block;
+            padding: 12px 24px;
+            background: #502b80;
+            color: #fff;
+            text-decoration: none;
+            border-radius: 6px;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="email-container">
+        <h2>Password Reset Successful</h2>
+        <p>Hello {{ user.username }},</p>
+        <p>Your password has been successfully reset on <strong>Morostav Books</strong>.</p>
+        <p>If you did not make this change, please reset your password immediately using the link below:</p>
+        <a href="{{ protocol }}://{{ domain }}{% url 'password_reset_start' %}" class="btn">Reset Your Password</a>
+        <p>If you have any concerns, contact our support team.</p>
+        <p>Thank you,<br><strong>Morostav Books Team</strong></p>
+    </div>
+</body>
+</html>
+{% endautoescape %}

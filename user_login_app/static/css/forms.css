@@ -137,3 +137,8 @@
     text-decoration: underline;
 }
 
+.email_body{
+    /* email_body.css */
+    background: url('/static/img/email_bg.png') no-repeat center center;
+    background-size: cover;
+}

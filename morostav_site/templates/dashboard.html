@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    {% load static %}
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="icon" type="image/x-icon" href="{% static 'img/favicon.webp' %}">
+    <link rel="stylesheet" href="{% static '/css/forms.css' %}">
+    <link rel="stylesheet" href=" {% static '/css/stlyes.css' %}">
+</head>
+<body>
+    <nav class="navbar navbar-dark bg-dark navbar-expand-md shadow">
+        <div class="container-fluid">
+            <a class="navbar-brand text-white" href="/"> Morostav Books</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navcol-1">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navcol-1">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link text-white" href="/">Home</a></li>
+                    <li class="nav-item"><a class="nav-link text-white" href="{% url 'login' %}">Login</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <div class="dashboard-container">
+        <h1>📊 Admin Dashboard</h1>
+        <div class="dashboard-stats">
+            <div class="stat-box">
+                <h2>{{ total_books }}</h2>
+                <p>Total Books</p>
+            </div>
+            <div class="stat-box">
+                <h2>{{ total_reviews }}</h2>
+                <p>Total Reviews</p>
+            </div>
+            <div class="stat-box">
+                <h2>{{ avg_rating }}</h2>
+                <p>Average Rating</p>
+            </div>
+            <div class="stat-box">
+                <h2>{{ total_users }}</h2>
+                <p>Total Users</p>
+            </div>
+        </div>
+    
+        <h2>📢 Latest Reviews</h2>
+        <ul class="review-list">
+            {% for review in latest_reviews %}
+                <li>
+                    <strong>{{ review.creator.username }}</strong> reviewed
+                    <em>{{ review.book.title }}</em>: 
+                    <span>⭐ {{ review.rating }}</span>
+                    <p>{{ review.review }}</p>
+                </li>
+            {% empty %}
+                <li>No reviews yet.</li>
+            {% endfor %}
+        </ul>
+    </div>
+    
+    <style>
+        .dashboard-container { max-width: 800px; margin: auto; padding: 20px; }
+        .dashboard-stats { display: flex; gap: 20px; }
+        .stat-box { background: #eee; padding: 20px; border-radius: 10px; text-align: center; }
+        .review-list { list-style: none; padding: 0; }
+        .review-list li { border-bottom: 1px solid #ddd; padding: 10px; }
+    </style>
+    <h2>📊 Ratings Distribution</h2>
+<canvas id="ratingsChart"></canvas>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    var ctx = document.getElementById('ratingsChart').getContext('2d');
+    var ratingsChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: ['1 Star', '2 Stars', '3 Stars', '4 Stars', '5 Stars'],
+            datasets: [{
+                label: 'Ratings Count',
+                data: [{{ ratings_1 }}, {{ ratings_2 }}, {{ ratings_3 }}, {{ ratings_4 }}, {{ ratings_5 }}],
+                backgroundColor: ['#ff3b30', '#ff9500', '#ffcc00', '#34c759', '#007aff'],
+            }]
+        }
+    });
+</script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" 
+            integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" 
+            crossorigin="anonymous"></script>
+</body>
+</html>

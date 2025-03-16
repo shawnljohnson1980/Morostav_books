@@ -31,7 +31,6 @@ class Rating(models.Model):
     objects=RatingManager()
 
 
-
 class Book(models.Model):
     title=models.CharField(max_length=65)
     creator=models.ForeignKey(User,related_name='reviews',on_delete=models.CASCADE)
@@ -39,4 +38,4 @@ class Book(models.Model):
     created_at= models.DateTimeField(auto_now_add=True)
     updated_at=models.DateTimeField(auto_now=True)
     objects= BookManager()
-# Create your models here.
+
