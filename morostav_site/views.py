@@ -8,13 +8,15 @@ from django.contrib import messages
 from .models import Book, Rating
 from django.db.models import Count  
 from django.contrib.auth.decorators import user_passes_test
+from django.contrib.auth.decorators import login_required, user_passes_test
+from django.contrib.auth.decorators import login_required
+from .models import Book, Rating, User
 
-def admin_required(user):
-    return user.is_authenticated and user.is_staff  
+def is_admin(user):
+    return user.is_authenticated and user.is_staff
 
 def home(request):
     return render(request,"books_home.html")
-
 
 def send_contact_form_email(name, email, subject, message):
     subject_line = f"New Contact Form Submission: {subject}"
@@ -48,12 +50,10 @@ def contact_view(request):
 
     return render(request, "contact.html")
 
-from django.shortcuts import render
-from django.contrib.auth.decorators import login_required
-from .models import Book, Rating, User
+
 
 @login_required
-@admin_required
+@user_passes_test(is_admin)
 def dashboard(request):
     # Count total books
     total_books = Book.objects.count()

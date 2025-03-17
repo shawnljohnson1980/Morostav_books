@@ -1,5 +1,11 @@
-from django.apps import AppConfig
 
-class UserLoginAppConfig(AppConfig):
-    default_auto_field = 'django.db.models.BigAutoField'
-    name = 'user_login_app'
+from django.contrib import admin
+from django.contrib.auth.admin import UserAdmin
+from .models import User
+
+class CustomUserAdmin(UserAdmin):
+    list_display = ('username', 'email', 'first_name', 'last_name', 'is_staff', 'is_superuser')
+    search_fields = ('username', 'email')
+    ordering = ('email',)
+
+admin.site.register(User, CustomUserAdmin)
