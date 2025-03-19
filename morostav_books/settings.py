@@ -82,8 +82,12 @@ WSGI_APPLICATION = 'morostav_books.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'm_b.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'm_b',
+        'USER': 'morostav_user',
+        'PASSWORD': 'Slj@Kmj@0612$$%%',
+        'HOST': 'localhost',
+        'PORT': '5432',
     }
 }
 
