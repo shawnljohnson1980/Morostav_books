@@ -41,16 +41,23 @@
                 <div class="form-group position-relative">
                     <label style="color: rgba(80, 43, 128, 0.9);">Password</label>
                     <input class="form-control" type="password" name="password" id="password" placeholder="Enter Password" required>
-                    
-                    <!-- 👁 Eye Icon -->
+                    <!-- scroll icon -->
                     <span onclick="togglePassword()" 
                           style="position: absolute; top: 38px; right: 12px; cursor: pointer; color: rgba(80, 43, 128, 0.6); font-size: 1.2em;">
-                        👁
+                          📜
                     </span>
                 </div>
                 <button type="submit" class="btn text-white" style="margin-top:29px; background: rgba(80, 43, 128, 0.6);">Login</button>
                 <a href="{% url 'password_reset' %}" style="color: rgba(237, 226, 241, 0.19)">Reset Password </a><!-- default Django -->
-            </form>            
+            </form>     
+            <div class="mt-3">
+                <p class="text-white">Not registered?
+                    <a href="{% url 'register' %}" class="text-decoration-none" style="color: rgba(190, 164, 255, 0.9); font-weight: bold; opacity:85%; %">
+                        Register here 🗝️
+                    </a>
+                </p>
+            </div>
+                   
             </div>
         </div>
     </div>
@@ -65,7 +72,6 @@
                 input.setAttribute("type", type);
             }
         </script>
-        
 </body>
 
 </html>

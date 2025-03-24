@@ -142,3 +142,18 @@
     background: url('/static/img/email_bg.png') no-repeat center center;
     background-size: cover;
 }
+
+.toggle-password-icon {
+    position: absolute;
+    right: 10px;
+    top: 35px;
+    cursor: pointer;
+    font-size: 1.3rem;
+    color: rgba(255, 255, 255, 0.7);
+    transition: transform 0.3s ease;
+}
+
+.toggle-password-icon:hover {
+    color: #d6bb8d;
+    transform: rotate(-5deg);
+}

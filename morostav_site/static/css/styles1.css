@@ -55,6 +55,15 @@
     font-size: 1.2rem;
     text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.8);
 }
+.hero-box .text-dark {
+  border: 2px solid rgba(41, 25, 2, 0.945); /* subtle highlight */
+  border-radius: 1rem;
+  background-color: rgba(61, 4, 83, 0.527); /* translucent dark overlay */
+  padding: 1.5rem;
+  backdrop-filter: blur(7px);
+  box-shadow: 0 0 10px rgba(211, 159, 223, 0.6); /* smooth drop shadow */
+  
+}
 .btn{
   background: rgba(110, 8, 124, 0.774); /* Purple base */
   color: white;
@@ -91,12 +100,14 @@
   margin: 50px auto;
   max-width: 800px;
   text-align: center;
+  overlay: rgba(61, 4, 83, 0.527); /* translucent dark overlay */
 }
 .review {
   background: #f8f8f8;
   padding: 15px;
   margin: 10px;
   border-radius: 5px;
+  background-color: rgba(61, 4, 83, 0.527); /* translucent dark overlay */
 }
 .gallery-thumbnails {
   display: flex;
@@ -123,6 +134,9 @@
   background: url("/static/img/Logo.jpg") no-repeat 60%/cover fixed;
   position: relative;
   height: 400px;
+  opacity: 90%;
+  backdrop-filter: blur(2px);
+  border-radius: 10px;
 }
 
 
@@ -249,11 +263,46 @@
   object-fit: cover;
 }
 
-#bg-video {
-  animation: fadeIn 3s ease-in-out forwards;
-}
-
 @keyframes fadeIn {
   0% { opacity: 0; }
   100% { opacity: 1; }
+}
+.morostav-navbar {
+  background-color: rgba(32, 18, 3, 0.95) !important;
+  border-bottom: 2px solid rgba(96, 64, 18, 0.85);
+  box-shadow: 0 0 20px rgba(41, 25, 2, 0.7);
+  backdrop-filter: blur(3px);
+}
+
+.navbar-brand {
+  font-family: 'Garamond', serif;
+  font-size: 1.4rem;
+  letter-spacing: 1px;
+}
+
+.nav-btn {
+  background-color: rgba(61, 39, 14, 0.8);
+  color: #fff;
+  border: 1px solid rgba(92, 64, 28, 0.8);
+  border-radius: 12px;
+  transition: all 0.3s ease-in-out;
+}
+
+.nav-btn:hover {
+  background-color: rgba(92, 64, 28, 1);
+  box-shadow: 0 0 10px rgba(255, 220, 170, 0.6);
+  color: #fff;
+}
+
+.nav-btn-highlight {
+  background-color: rgba(176, 122, 38, 0.9);
+  color: #fff;
+  border: none;
+  font-weight: bold;
+}
+
+.nav-btn-highlight:hover {
+  background-color: #f0c06b;
+  color: #222;
+  box-shadow: 0 0 10px rgba(255, 245, 220, 0.8);
 }
