@@ -1,12 +1,20 @@
 from django.urls import path
-from .views import dashboard
 from . import views
+from .views import dashboard
+
 
 urlpatterns = [
-    path('', views.home, name= "home"),
-    path('dashboard/', dashboard, name='dashboard'),
-    path('contact/', views.contact_view, name='contact'),
-#  path('contact/get_contacts', views.get_contacts, name="get contacts"),
-    #path('contact/process', views.process, name= 'process'),
-#  path('contact/get_calendar', views.fetch_calendar_events, name= "get calender"),
+    path('', views.index, name="home"),
+    path('dashboard', dashboard, name='dashboard'),
+    path('contact', views.contact_view, name='contact'),
+    path('books/<int:book_id>/', views.book, name='book'),
+    path('gallery',views.gallery, name="gallery"),
+    path('reviews', views.add_review,name="reviews"),
+    path('about', views.about,name="about"),
+    path('books_home', views.books_home, name="books_home"),
+    path('add_book', views.add_book, name="add_book"),
+    path('calendar/', views.calendar_view, name='calendar'),  # Users can see it
+    path('calendar/events/', views.get_events, name='get_calendar_events'),  # Fetch events dynamically
+    path('calendar/add_event/', views.add_event, name='add_event'),  # Admin-only route
+    path('calendar/', views.calendar_view, name="calendar"),
 ]

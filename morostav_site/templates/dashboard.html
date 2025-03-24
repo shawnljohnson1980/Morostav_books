@@ -1,93 +1,180 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
     <title>Admin Dashboard</title>
     {% load static %}
+    {% load static %}
+    <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="icon" type="image/x-icon" href="{% static 'img/favicon.webp' %}">
-    <link rel="stylesheet" href="{% static '/css/forms.css' %}">
-    <link rel="stylesheet" href=" {% static '/css/stlyes.css' %}">
+    <link rel="stylesheet" href="{% static 'css/styles1.css' %}">
 </head>
 <body>
-    <nav class="navbar navbar-dark bg-dark navbar-expand-md shadow">
+    <nav class="navbar navbar-dark bg-dark navbar-expand-md shadow-lg">
         <div class="container-fluid">
-            <a class="navbar-brand text-white" href="/"> Morostav Books</a>
+            <a class="navbar-brand text-white" href="{% url 'books_home' %}">Admin Dashboard</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navcol-1">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navcol-1">
                 <ul class="navbar-nav ms-auto">
-                    <li class="nav-item"><a class="nav-link text-white" href="/">Home</a></li>
-                    <li class="nav-item"><a class="nav-link text-white" href="{% url 'login' %}">Login</a></li>
+                    <a href="{% url 'books_home' %}" class="btn">Books</a>
+                    <a href="{% url 'to_login' %}" class="btn">Login</a>
+                    <a href="{% url 'about' %}" class="btn">About Me</a>
+                    <a href="{% url 'user/log_out' %}" class="btn">Log out</a>
                 </ul>
             </div>
         </div>
     </nav>
-    <div class="dashboard-container">
-        <h1>📊 Admin Dashboard</h1>
-        <div class="dashboard-stats">
-            <div class="stat-box">
-                <h2>{{ total_books }}</h2>
-                <p>Total Books</p>
-            </div>
-            <div class="stat-box">
-                <h2>{{ total_reviews }}</h2>
-                <p>Total Reviews</p>
-            </div>
-            <div class="stat-box">
-                <h2>{{ avg_rating }}</h2>
-                <p>Average Rating</p>
-            </div>
-            <div class="stat-box">
-                <h2>{{ total_users }}</h2>
-                <p>Total Users</p>
+
+    <div class="container mt-4">
+        <h2 class="text-center">Manage Books & Reviews</h2>
+
+        <!-- Book Addition Form -->
+        <div class="card p-3 shadow mt-4">
+            <h3>Add a New Book</h3>
+            <form id="bookForm" method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label>Title:</label>
+                    <input type="text" class="form-control" name="title" required>
+                </div>
+                <div class="form-group mt-3">
+                    <label>Description:</label>
+                    <textarea class="form-control" name="description" required></textarea>
+                </div>
+                <div class="form-group mt-3">
+                    <label>ISBN:</label>
+                    <input type="text" class="form-control" name="isbn">
+                </div>
+                <div class="form-group mt-3">
+                    <label>Cover Image:</label>
+                    <input type="file" class="form-control" name="cover_image">
+                </div>
+
+                <!-- Genre Selection with Auto-Refresh -->
+                <div class="form-group mt-3">
+                    <label>Genre:</label>
+                    <select id="genreSelect" class="form-control" name="genre" onchange="toggleGenreInput()">
+                        <option value="">--Select--</option>
+                        {% for genre in genres %}
+                        <option value="{{ genre.id }}">{{ genre.name }}</option>
+                        {% endfor %}
+                        <option value="add">Add new</option>
+                    </select>
+                </div>
+
+                <!-- Hidden New Genre Input -->
+                <div class="form-group mt-3" id="new_genre" style="display: none;">
+                    <label>New Genre:</label>
+                    <input type="text" class="form-control" name="new_genre" id="newGenreInput">
+                    <button type="button" class="btn btn-info mt-2" onclick="addGenre()">Add Genre</button>
+                </div>
+
+                <button type="submit" class="btn btn-primary mt-4">Add Book</button>
+            </form>
+        </div>
+
+        <!-- Review Filtering -->
+        <div class="card p-3 shadow mt-4">
+            <h3>Filter Reviews by Rating</h3>
+            <select id="reviewFilter" class="form-control" onchange="filterReviews()">
+                <option value="all">All Ratings</option>
+                <option value="5">5 Stars</option>
+                <option value="4">4 Stars</option>
+                <option value="3">3 Stars</option>
+                <option value="2">2 Stars</option>
+                <option value="1">1 Star</option>
+            </select>
+        </div>
+
+        <!-- Reviews -->
+        <div class="reviews mt-5">
+            <h3>Recent Reviews</h3>
+            <div class="row" id="reviewList">
+                {% for rating in ratings %}
+                    <div class="col-md-4 review-item" data-rating="{{ rating.rating }}">
+                        <div class="card p-3 shadow">
+                            <div class="card-body">
+                                <h5 class="card-title">{{ rating.creator.username }}</h5>
+                                <p class="card-text">Rated: {{ rating.rating }}/5</p>
+                                <p class="text-muted">"{{ rating.review }}"</p>
+                                
+                                {% if allow_replies %}
+                                <!-- Optional Reply Form -->
+                                <form method="POST" action="{% url 'reply_review' rating.id %}">
+                                    {% csrf_token %}
+                                    <textarea class="form-control mt-2" name="reply" placeholder="Write a reply"></textarea>
+                                    <button type="submit" class="btn btn-sm btn-secondary mt-2">Reply</button>
+                                </form>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                {% empty %}
+                    <p>No reviews yet. Be the first to review!</p>
+                {% endfor %}
             </div>
         </div>
-    
-        <h2>📢 Latest Reviews</h2>
-        <ul class="review-list">
-            {% for review in latest_reviews %}
-                <li>
-                    <strong>{{ review.creator.username }}</strong> reviewed
-                    <em>{{ review.book.title }}</em>: 
-                    <span>⭐ {{ review.rating }}</span>
-                    <p>{{ review.review }}</p>
-                </li>
-            {% empty %}
-                <li>No reviews yet.</li>
-            {% endfor %}
-        </ul>
     </div>
-    
-    <style>
-        .dashboard-container { max-width: 800px; margin: auto; padding: 20px; }
-        .dashboard-stats { display: flex; gap: 20px; }
-        .stat-box { background: #eee; padding: 20px; border-radius: 10px; text-align: center; }
-        .review-list { list-style: none; padding: 0; }
-        .review-list li { border-bottom: 1px solid #ddd; padding: 10px; }
-    </style>
-    <h2>📊 Ratings Distribution</h2>
-<canvas id="ratingsChart"></canvas>
 
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script>
-    var ctx = document.getElementById('ratingsChart').getContext('2d');
-    var ratingsChart = new Chart(ctx, {
-        type: 'bar',
-        data: {
-            labels: ['1 Star', '2 Stars', '3 Stars', '4 Stars', '5 Stars'],
-            datasets: [{
-                label: 'Ratings Count',
-                data: [{{ ratings_1 }}, {{ ratings_2 }}, {{ ratings_3 }}, {{ ratings_4 }}, {{ ratings_5 }}],
-                backgroundColor: ['#ff3b30', '#ff9500', '#ffcc00', '#34c759', '#007aff'],
-            }]
+    <script>
+        function toggleGenreInput() {
+            let genreSelect = document.getElementById("genreSelect");
+            let newGenreField = document.getElementById("new_genre");
+
+            if (genreSelect.value === "add") {
+                newGenreField.style.display = "block";
+            } else {
+                newGenreField.style.display = "none";
+            }
         }
-    });
-</script>
+
+        function addGenre() {
+            let newGenreInput = document.getElementById("newGenreInput").value;
+
+            if (newGenreInput.trim() !== "") {
+                fetch("{% url 'add_genre_ajax' %}", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "X-CSRFToken": "{{ csrf_token }}"
+                    },
+                    body: JSON.stringify({ name: newGenreInput })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        let genreSelect = document.getElementById("genreSelect");
+                        let newOption = document.createElement("option");
+                        newOption.value = data.genre_id;
+                        newOption.textContent = newGenreInput;
+                        genreSelect.insertBefore(newOption, genreSelect.lastChild);
+                        newGenreField.style.display = "none";
+                        genreSelect.value = data.genre_id;
+                    } else {
+                        alert("Error adding genre");
+                    }
+                });
+            }
+        }
+
+        function filterReviews() {
+            let selectedRating = document.getElementById("reviewFilter").value;
+            let reviews = document.querySelectorAll(".review-item");
+
+            reviews.forEach(review => {
+                if (selectedRating === "all" || review.getAttribute("data-rating") === selectedRating) {
+                    review.style.display = "block";
+                } else {
+                    review.style.display = "none";
+                }
+            });
+        }
+    </script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" 
-            integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" 
-            crossorigin="anonymous"></script>
+    integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" 
+    crossorigin="anonymous"></script>
 </body>
 </html>

@@ -1,23 +1,32 @@
-from django.shortcuts import render,HttpResponse,redirect
+from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib import messages
+from django.db.models import Count, Avg
+from django.contrib.auth.decorators import login_required, user_passes_test
+from django.http import JsonResponse
 from django.core.mail import send_mail
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
+from django.views.decorators.csrf import csrf_exempt
+import json
 from django.conf import settings
-from django.shortcuts import render, redirect
-from django.contrib import messages
-from .models import Book, Rating
-from django.db.models import Count  
-from django.contrib.auth.decorators import user_passes_test
-from django.contrib.auth.decorators import login_required, user_passes_test
-from django.contrib.auth.decorators import login_required
-from .models import Book, Rating, User
+from .models import Book, Rating, User, GalleryImage, Genre, Event
+from django.conf.urls.static import static
 
+# Admin check
 def is_admin(user):
     return user.is_authenticated and user.is_staff
 
-def home(request):
-    return render(request,"books_home.html")
-
+# Homepage View
+def index(request):
+    latest_reviews = Rating.objects.select_related('creator', 'book').order_by('-created_at')[:3]
+    featured_book = Book.objects.annotate(avg_rating=Avg('ratings__rating')).first()
+    gallery_images = GalleryImage.objects.all()   
+    return render(request, 'home.html', {
+        'latest_reviews': latest_reviews,
+        'featured_book': featured_book,
+        'gallery_images': gallery_images
+    })
+# Contact Form
 def send_contact_form_email(name, email, subject, message):
     subject_line = f"New Contact Form Submission: {subject}"
     html_message = render_to_string('emails/contact_form_submission.html', {
@@ -26,136 +35,159 @@ def send_contact_form_email(name, email, subject, message):
         'subject': subject,
         'message': message,
         'protocol': 'https' if settings.USE_HTTPS else 'http',
-        'domain': settings.ALLOWED_HOSTS[0],  # Ensure ALLOWED_HOSTS is set correctly
+        'domain': settings.ALLOWED_HOSTS[0],
     })
     plain_message = strip_tags(html_message)
     from_email = settings.DEFAULT_FROM_EMAIL
-    to_email = [settings.CONTACT_EMAIL]  # Add your support email here
-    
+    to_email = [settings.CONTACT_EMAIL] 
     send_mail(subject_line, plain_message, from_email, to_email, html_message=html_message)
 
+@login_required
+@user_passes_test(is_admin)
+def add_event(request):
+    """Allows logged-in users to add an event."""
+    if request.method == "POST":
+        data = json.loads(request.body)
+        event = Event.objects.create(
+            title=data.get("title"),
+            description=data.get("description", ""),
+            start_time=data.get("start_time"),
+            end_time=data.get("end_time"),
+            user=request.user
+        )
+        return JsonResponse({"success": True, "event_id": event.id})
+    return JsonResponse({"success": False, "error": "Invalid request"}, status=400)
+
+@login_required
+@user_passes_test(is_admin)
 def contact_view(request):
     if request.method == "POST":
         name = request.POST.get('name')
         email = request.POST.get('email')
         subject = request.POST.get('subject')
-        message = request.POST.get('message')
-
+        message = request.POST.get('message')      
         if name and email and subject and message:
             send_contact_form_email(name, email, subject, message)
             messages.success(request, "Your message has been sent successfully!")
-            return redirect('/contact')
+            return redirect('contact')
         else:
-            messages.error(request, "All fields are required. Please fill out the form completely.")
-
+            messages.error(request, "All fields are required. Please fill out the form completely.")  
     return render(request, "contact.html")
 
-
-
+# Admin Dashboard
 @login_required
 @user_passes_test(is_admin)
 def dashboard(request):
-    # Count total books
-    total_books = Book.objects.count()
-    
-    # Count total reviews
-    total_reviews = Rating.objects.count()
-    
-    # Average rating (if applicable)
-    avg_rating = Rating.objects.aggregate(avg=models.Avg('rating'))['avg'] or 0
-    
-    # Total users
-    total_users = User.objects.count()
-
-    # Latest reviews (limit 5)
-    latest_reviews = Rating.objects.select_related('creator', 'book').order_by('-created_at')[:5]
-
     context = {
-        "total_books": total_books,
-        "total_reviews": total_reviews,
-        "avg_rating": round(avg_rating, 2),
-        "total_users": total_users,
-        "latest_reviews": latest_reviews,
+        "total_books": Book.objects.count(),
+        "total_reviews": Rating.objects.count(),
+        "avg_rating": round(Rating.objects.aggregate(avg=Avg('rating'))['avg'] or 0, 2),
+        "total_users": User.objects.count(),
+        "latest_reviews": Rating.objects.select_related('creator', 'book').order_by('-created_at')[:5],
     }
     return render(request, "dashboard.html", context)
 
+@login_required
+@user_passes_test(is_admin)
+def get_events(request):
+    """Fetch all events in JSON format."""
+    events = Event.objects.all().values("title", "start_time", "end_time", "description")
+    return JsonResponse(list(events), safe=False)
 
-def index(request):
-    print(request.session['user_id'])
-    user=User.objects.get(id=request.session['user_id'])
-    # printing user id   
-    print('*****************************')
-    print(user.id)
-    rating=Rating.objects.all()
-    context={
-    'user':user,
-    'ratings':rating
-    }
-    return render(request,'book_home.html',context)
+def calendar_view(request):
+    """Render the calendar page."""
+    return render(request, "calendar.html")
 
+# AJAX Genre Addition
+def add_genre_ajax(request):
+    if request.method == "POST":
+        import json
+        data = json.loads(request.body)
+        genre_name = data.get("name", "").strip()
+        if genre_name:
+            genre, created = Genre.objects.get_or_create(name=genre_name)
+            return JsonResponse({"success": True, "genre_id": genre.id, "created": created})  
+    return JsonResponse({"success": False})
 
+# Logout View
 def log_out(request):
-   request.session.flush()
-   return redirect('/')
+    request.session.flush()
+    return redirect('/')
 
-def process(request):
-    errors = Book.objects.validator(request.POST)
-    Rating.objects.validator(request.POST)
-    Book.objects.validator(request.POST)
-    if errors:
-        for k, v in errors.items():
-            messages.error(request, v,extra_tags=k)
-            return redirect('/books/new')
-    try:
-        rating = request.POST['rating'],
-        review= request.POST['review'],
-        creator= request.session['user_id']
-    except:
-        rating = ''
-        review =''
-        creator =''
-    try:
-        rating = request.POST['rating']
-        review = request.POST['review']
-        creator=request.POST['user_id']
-    except:
-        rating = ''
-        review =''
-        creator=''
-    # Rating Check / Create
-    if rating.isnumeric():
-       rating_obj = Rating.objects.get(id=rating)
-       print(rating_obj.rating,rating_obj.review,rating_obj.creator)
-    try:
-        book=request.POST['book'],
-        user=User.objects['user_id'],
-        title = request.POST['title'],
-        creator= user,
-        rating=request.POST['rating']
-    except:
-        title = ''
-        creator =''
-        rating=''
-    try:
-        title= request.POST['title'],
-        creator=user,
-        rating=rating
-    except:
-       title = ''
-       author =''
-       creator=''
-       rating=''
-    # Rating Check / Create
-    if Book.isnumeric():
-       book_obj = Book.objects.get(id=book)
-       print(book_obj.title,book_obj.book_obj.creator,book_obj.rating)
-    else:
-        new_book=Book(title=title,rating=rating,creator=user)
-        new_book.save()
-        print(new_book)
-        print(new_book)
-        new_rating = Rating(rating=rating,review=review,creator=creator)
-        new_rating.save()
-        print(new_rating)
-    # Book Check / Create
-    return redirect('/new')
+# Gallery View
+def gallery(request):
+    return render(request, "gallery.html", {"gallery_images": GalleryImage.objects.all()})
+
+# Single Book Detail
+def book(request, book_id):
+    book = get_object_or_404(Book.objects.annotate(avg_rating=Avg('rating__rating')), id=book_id)
+    return render(request, 'books.html', {'book': book})
+
+# Add Review
+@login_required
+def add_review(request, book_id):
+    """Allows users to leave reviews & ratings for a specific book."""
+    book = get_object_or_404(Book, id=book_id)   
+    if request.method == "POST":
+        errors = Rating.objects.validator(request.POST)
+        if errors:
+            for message in errors.values():
+                messages.error(request, message)
+            return redirect(f'/books/{book_id}')     
+        new_rating = Rating.objects.create(
+            rating=int(request.POST['rating']),
+            review=request.POST['review'],
+            creator=request.user
+        )
+        book.rating.add(new_rating)
+        messages.success(request, "Review added successfully!")
+    return redirect(f'/books/{book_id}')
+
+# About Page
+def about(request):
+    return render(request, "about.html")
+
+# Books Homepage (List of Books)
+
+
+def books_home(request):
+    books = Book.objects.annotate(avg_rating=Avg('ratings__rating'))  # ✅ Using 'ratings__rating' now
+    for book in books:
+        book.latest_reviews = book.ratings.all().order_by('-created_at')[:3]
+    return render(request, 'books.html', {'books': books})
+
+
+# Add Book (Admin Only)
+@login_required
+@user_passes_test(is_admin)
+def add_book(request):
+    if request.method == "POST":
+        title = request.POST["title"]
+        description = request.POST["description"]
+        isbn = request.POST.get("isbn")
+        cover_image = request.FILES.get("cover_image")
+        genre_id = request.POST.get("genre")
+        new_genre_name = request.POST.get("new_genre", "").strip()
+        # Ensure genre is valid
+        genre = None
+        if new_genre_name:
+            genre, _ = Genre.objects.get_or_create(name=new_genre_name)
+        elif genre_id:
+            genre = Genre.objects.get(id=genre_id)
+        # Create book
+        book = Book.objects.create(
+            title=title,
+            description=description,
+            cover_image=cover_image,
+            genre=genre,
+            isbn=isbn,
+        )
+        messages.success(request, "Book added successfully!")
+        return redirect("books_home")
+    return render(request, "add_book.html", {"genres": Genre.objects.all()})
+
+def calendar_view(request):
+    """Display all upcoming events for users."""
+    events = Event.objects.order_by('start_time')  # Sort by date
+    return render(request, "calendar.html", {"events": events})
+

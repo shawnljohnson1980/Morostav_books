@@ -8,6 +8,7 @@ from django.utils.html import strip_tags
 from django.core.mail import EmailMultiAlternatives
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.apps import apps
+
 User = get_user_model()
 
 def is_admin(user):
@@ -33,7 +34,6 @@ def user_create(request):
         username = request.POST['username']  # Added username field
         email = request.POST['email']
         password = request.POST['password']
-
     user = user_manager.create_user(  
         username=username,  # Pass username into the model
         email=email,
@@ -41,9 +41,9 @@ def user_create(request):
         last_name=last_name,
         password=password
     )
-    login(request, user)
+    log_in(request, user)
     messages.info(request, f"Account for {username} created successfully!")
-    return redirect('/books_home')
+    return redirect('home/')
 
 
 def to_login(request):
@@ -52,36 +52,34 @@ def to_login(request):
 
 def log_in(request):
     if request.method == "POST":
-        login_identifier = request.POST['login_identifier']  # Can be email or username
-        password = request.POST['password']
-        
-        # Try to find the user by email or username
+        login_identifier = request.POST.get("login_identifier", "").strip()  # Can be email or username
+        password = request.POST.get("password", "").strip()
+        # Ensure fields are not empty
+        if not login_identifier or not password:
+            messages.error(request, "Please fill in both fields.")
+            return redirect("to_login")
+        # Try to authenticate using username/email + password
         user = None
-        try:
-            if "@" in login_identifier:
-                user = User.objects.get(email=login_identifier)
+        if "@" in login_identifier:  # Checking if it's an email
+            user = User.objects.filter(email=login_identifier).first()
+        else:
+            user = User.objects.filter(username=login_identifier).first()
+        if user:
+            authenticated_user = authenticate(request, username=user.username, password=password)
+            if authenticated_user:
+                login(request, authenticated_user)
+                messages.success(request, "Login successful!")
+                return redirect("books_home")  # Redirect to homepage after login
             else:
-                user = User.objects.get(username=login_identifier)
-        except User.DoesNotExist:
+                messages.error(request, "Incorrect password. Please try again.")
+        else:
             messages.error(request, "Username or Email not found.")
-            return redirect('/login')
-
-        # Check password
-        if not user.check_password(password):
-            messages.error(request, "Incorrect password. Please try again.")
-            return redirect('/login')
-
-        # Log the user in
-        login(request, user)
-        messages.info(request, "Login successful!")
-        return redirect('/books_home')
-
-    return render(request, "login.html")
+        return redirect("to_login")  # Redirect back to login page on failure
 
 
 def send_reset_email(user, domain, uid, token):
     subject = "Reset Your Password - Morostav Books"
-    html_content = render_to_string('emails/reset_email.html',{
+    html_content = render_to_string('registration/password_reset_success.html',{
         'user': user,
         'domain': domain,
         'uid': uid,
@@ -100,7 +98,7 @@ def log_out(request):
         request.session.flush()
     return redirect('/books_home')
 
-def password_reset_complete(request):
+def password_reset_done(request):
     user = request.user  
     send_mail(
         'Password Reset Successful',
@@ -109,7 +107,7 @@ def password_reset_complete(request):
         [user.email],
         fail_silently=False,
     )
-    return render(request, 'password_reset_complete.html')
+    return render(request, 'registration/password_reset_complete.html')
 
 def register(request):
     return render(request, "register.html")
