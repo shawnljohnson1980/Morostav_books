@@ -11,6 +11,17 @@
     <link rel="stylesheet" href="{% static 'css/styles1.css' %}">
 </head>
 <body>
+    <div class="video-background">
+        <video autoplay muted loop id="bg-video">
+        <source src="{% static 'videos/enchanted_library.mp4' %}" style="no-repeat center center/cover" type="video/mp4">
+        Your browser does not support the video tag.
+        </video>
+        <div class="video-overlay-content">
+        <!-- Optional: Site title, buttons, nav, etc. -->
+        <h1>Welcome to Morostav Books</h1>
+        <p>Your next adventure starts here.</p>
+        </div>
+    </div>      
     <nav class="navbar navbar-dark bg-dark navbar-expand-md shadow-lg">
         <div class="container-fluid">
             <a class="navbar-brand text-white" href="/">Welcome to Morostav Books</a>
@@ -22,6 +33,10 @@
                     <a href="{% url 'books_home' %}" class="btn"> Books</a>
                     <a href="{% url 'to_login'%}" class="btn">Login</a>
                     <a href="{% url 'about' %}" class="btn">About Me</a>
+                    {% if user.is_staff %}
+                   <li><a href="{% url 'add_book' %}">Add Book</a></li>
+                   <li><a href="{% url 'admin_dashboard' %}">Admin Dashboard</a></li>
+                    {% endif %}
                 </ul>
             </div>
         </div>
