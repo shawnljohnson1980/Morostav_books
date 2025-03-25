@@ -1,98 +1,93 @@
+<!-- create_review.html -->
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
-    <title>Add Review</title>
-    {% load static %}
-    <link rel="stylesheet" href="{% static 'forms.css' %}">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Leave a Review</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/forms.css' %}">
+    <link rel="icon" type="image/x-icon" href="{% static 'img/favicon.webp' %}">
 </head>
-
 <body>
-    <nav class="navbar navbar-light navbar-expand-md bg-info shadow">
-        <div class="container-fluid"><a class="navbar-brand text-white" href="#">Dojo Reads Review Creator</a><button
-                data-toggle="collapse" class="navbar-toggler" data-target="#navcol-1"><span class="sr-only">Toggle
-                    navigation</span><span class="navbar-toggler-icon"></span></button>
-            <div class="collapse navbar-collapse" id="navcol-1">
-                <ul class="navbar-nav">
-                    <li class="nav-item"></li>
-                    <li class="nav-item"></li>
-                    <li class="nav-item"></li>
-                </ul>
-            </div><a class="text-white mr-5" href="/dojo_reads">Home</a><a class="text-white" href="/log_out">Logout</a>
+    <nav class="navbar navbar-dark bg-dark navbar-expand-md shadow">
+        <div class="container-fluid">
+            <a class="navbar-brand text-white" href="/">Morostav Books</a>
         </div>
     </nav>
-    <div class="container mt-5">
-        <div class="row">
-            <div class="col">{% for message in messages %}
-                <P>{{ message }}</P>
-                {% endfor %}
-                <h3>Add a new book and Review:</h3>
-                <form class="p-3 ml-3" method="post" action="/dojo_reads/book/new">
-                    {% csrf_token %}
-                    <div class="form-group mt-5"><label class="d-inline-block" style="font-weight: bold;">Book
-                            Title:</label><input
-                            class="border rounded border-dark shadow form-control d-inline-block re-size-3 ml-4"
-                            type="text" name="title" placeholder="Your Book title " required="True"></div>
-                    <!-- Author Select -->
-                    <div class="form-group">
-                        <label class="d-block" style="font-weight: bold;">Author:</label>
 
-                        <p class="d-inline-block re-size ml-5 " style="font-weight: 500;">Select
-                            from
-                            the list&nbsp;</p>
-                        <select class="border rounded border-dark shadow custom-select d-inline-block re-size2"
-                            name="author" onchange="myFunction()" id="mySelect" required="true">
-                            <option value="">--Select--</option>
-                            {% for author in authors %}
-                            <option value="{{ author.id }}">{{ author.full_name }}</option>
-                            {% endfor %}
-                            <option value="add">Add new</option>
-                        </select>
-                    </div>
-                    <!-- End Author Select -->
-                    <!-- Author Full Name -->
-                    <div class="form-group" id="new_author">
+    <div style="height: 100px;"></div>
+    <div class="form-container">
+        <form class="border-dark shadow p-3 login-container" method="POST">
+            {% csrf_token %}
+            <p class="text-white border-rider">Leave a Review</p>
 
-                    </div>
-                    <!-- End Author Full Name -->
-                    <div class="form-group"><label class="d-inline-block"
-                            style="font-weight: bold;">Review:</label><textarea
-                            class="border rounded border-dark shadow form-control re-size2" name="review"
-                            placeholder="Add your remarks about this book" required="True" rows="5"></textarea></div>
-                    <div class="form-group text-left d-inline re-size2 mt-4">
-                        <p class="d-inline-block resize-5 mt-4" style="font-weight: bold;">Rating</p><input
-                            class="shadow form-control d-inline-block re-size ml-3 mt-4" type="number" name="Rating"
-                            min="1" max="5" step="1" placeholder="1" required="True">
-                    </div>
-                    <p class="d-inline-block re-size2 ml-2 mt-4" style="font-weight: bold;">Stars</p>
-                    <div class="form-group text-right"><button type="submit"
-                            class="btn btn-info border rounded shadow mt-5 ">Add book
-                            and Review</button></div>
-                </form>
+            <div class="form-group">
+                <label style="color: rgba(80, 43, 128, 0.9);">Rating</label>
+                <div class="star-rating">
+                    {% for i in "54321" %}
+                        <input type="radio" id="star{{ i }}" name="rating" value="{{ i }}">
+                        <label for="star{{ i }}">⭐</label>
+                    {% endfor %}
+                </div>
             </div>
-        </div>
-    </div>
-    <section class=" mb-5"></section>
-    <script src="{% static 'assets/js/jquery.min.js' %}"></script>
-    <script src="{% static 'assets/bootstrap/js/bootstrap.min.js' %}"></script>
-    <script>
-        function myFunction() {
-            var x = document.getElementById("mySelect").value;
-            var y = `
-            <p class="d-inline-block re-size ml-5" style="font-weight: 500;">Or add a new Author</p><input
-            class="border rounded border-dark shadow form-control d-inline-block re-size4 ml-2"
-            type="text" placeholder="add a new author" name="full_name" required="true" >
-            `
-            if (x == "add") {
-                document.querySelector("#new_author").innerHTML = y
-            } else {
-                document.querySelector("#new_author").innerHTML = null
-            }
-            console.log(x)
-        }
-    </script>
-</body>
 
+            <div class="form-group">
+                <label style="color: rgba(80, 43, 128, 0.9);">Review</label>
+                <textarea class="form-control" name="review" rows="4" placeholder="Write your thoughts..."></textarea>
+            </div>
+
+            <button type="submit" class="btn text-white mt-3" style="background: rgba(80, 43, 128, 0.6);">Submit Review</button>
+        </form>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+</body>
+</html>
+
+<!-- edit_review.html -->
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Your Review</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/forms.css' %}">
+    <link rel="icon" type="image/x-icon" href="{% static 'img/favicon.webp' %}">
+</head>
+<body>
+    <nav class="navbar navbar-dark bg-dark navbar-expand-md shadow">
+        <div class="container-fluid">
+            <a class="navbar-brand text-white" href="/">Morostav Books</a>
+        </div>
+    </nav>
+    <div style="height: 100px;"></div>
+    <div class="form-container">
+        <form class="border-dark shadow p-3 login-container" method="POST">
+            {% csrf_token %}
+            <p class="text-white border-rider">Edit Your Review</p>
+            <div class="form-group">
+                <label style="color: rgba(80, 43, 128, 0.9);">Rating</label>
+                <div class="star-rating">
+                    {% for i in "54321" %}
+                        <input type="radio" id="edit-star{{ i }}" name="rating" value="{{ i }}" {% if review.rating == i|add:'0' %}checked{% endif %}>
+                        <label for="edit-star{{ i }}">⭐</label>
+                    {% endfor %}
+                </div>
+            </div>
+            <div class="form-group">
+                <label style="color: rgba(80, 43, 128, 0.9);">Review</label>
+                <textarea class="form-control" name="review" rows="4">{{ review.review }}</textarea>
+            </div>
+            <button type="submit" class="btn text-white mt-3" style="background: rgba(80, 43, 128, 0.6);">Update Review</button>
+        </form>
+    </div>
+</div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+</body>
 </html>

@@ -22,30 +22,25 @@
         <p>Your next adventure starts here.</p>
         </div>
     </div>      
-    <nav class="navbar navbar-expand-md shadow-lg morostav-navbar">
+    <nav class="navbar navbar-dark bg-dark navbar-expand-md shadow-lg">
         <div class="container-fluid">
-            <a class="navbar-brand text-light fw-bold" href="/">Welcome to Morostav Books</a>
+            <a class="navbar-brand text-white" href="/">Welcome to Morostav Books</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navcol-1">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navcol-1">
-                <ul class="navbar-nav ms-auto d-flex gap-2">
-                    <li class="nav-item">
-                        <a href="/books_home" class="btn nav-btn">Books</a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="/user/to_login/" class="btn nav-btn">Login</a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="/about" class="btn nav-btn">About Me</a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="/books_home" class="btn nav-btn nav-btn-highlight">Browse Books</a>
-                    </li>
+                <ul class="navbar-nav ms-auto">
+                    <a href="{% url 'books_home' %}" class="btn"> Books</a>
+                    <a href="{% url 'to_login'%}" class="btn">Login</a>
+                    <a href="{% url 'about' %}" class="btn">About Me</a>
+                    {% if user.is_staff %}
+                    <li><a href="{% url 'add_book' %}">Add Book</a></li>
+                    <li><a href="{% url 'admin_dashboard' %}">Admin Dashboard</a></li>
+                    {% endif %}
                 </ul>
             </div>
         </div>
-    </nav>    
+    </nav>
 <div class="hero text-dark">
     <h1>Morostav Books</h1>
     <p>Your next adventure starts here.</p>
@@ -62,8 +57,7 @@
 </div>
 <div class="reviews">
     <h2>Recent Reviews</h2>
-    <div class="row">
-        
+    <div class="row"> 
         {% for rating in ratings %}
             <div class="col-md-4">
                 <div class="card p-3 shadow">

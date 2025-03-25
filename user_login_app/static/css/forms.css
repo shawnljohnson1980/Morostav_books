@@ -157,3 +157,60 @@
     color: #d6bb8d;
     transform: rotate(-5deg);
 }
+.scroll-icon {
+    transition: transform 0.3s ease;
+}
+
+.scroll-icon:hover {
+    transform: rotate(-10deg) scale(1.2);
+}
+@keyframes unroll {
+    0% {
+        transform: rotateX(90deg) scaleY(0);
+        opacity: 0;
+    }
+    100% {
+        transform: rotateX(0) scaleY(1);
+        opacity: 1;
+    }
+}
+
+.scroll-icon.clicked {
+    animation: unroll 0.6s ease forwards;
+}
+.scroll-icon::before {
+    content: '';
+    position: absolute;
+    top: -5px;
+    left: -5px;
+    width: 30px;
+    height: 30px;
+    background: radial-gradient(circle, rgba(255,255,255,0.4), transparent);
+    border-radius: 50%;
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.scroll-icon:hover::before {
+    opacity: 1;
+}
+/* Star Rating Input Styling */
+.star-rating input[type="radio"] {
+    display: none;
+  }
+  
+  .star-rating label {
+    font-size: 2rem;
+    color: rgba(255, 255, 255, 0.4);
+    transition: transform 0.3s ease, color 0.3s ease;
+    cursor: pointer;
+    padding: 0 5px;
+  }
+  
+  .star-rating input[type="radio"]:checked ~ label,
+  .star-rating label:hover,
+  .star-rating label:hover ~ label {
+    color: gold;
+    transform: scale(1.2) rotate(-5deg);
+  }
+  

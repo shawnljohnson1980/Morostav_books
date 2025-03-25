@@ -65,13 +65,17 @@
             integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" 
             crossorigin="anonymous">
         </script>
-        <script>
-            function togglePassword() {
-                const input = document.getElementById("password");
-                const type = input.getAttribute("type") === "password" ? "text" : "password";
-                input.setAttribute("type", type);
-            }
-        </script>
+        function togglePassword(id) {
+            const input = document.getElementById(id);
+            const icon = event.target;
+        
+            const type = input.getAttribute("type") === "password" ? "text" : "password";
+            input.setAttribute("type", type);
+        
+            icon.classList.add("clicked");
+            setTimeout(() => icon.classList.remove("clicked"), 600);
+        }
+    </script>
 </body>
 
 </html>

@@ -21,6 +21,7 @@ class Book(models.Model):
     cover_image = models.ImageField(upload_to='book_covers/', blank=True, null=True)
     genre = models.ForeignKey(Genre, on_delete=models.SET_NULL, null=True)
     isbn = models.CharField(max_length=13, unique=True, blank=True, null=True)
+    published_date = models.DateField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -28,7 +29,6 @@ class Book(models.Model):
         """Calculate and return the average rating for this book."""
         avg = self.ratings.aggregate(Avg('rating'))['rating__avg']
         return round(avg, 1) if avg else 0
-
     def __str__(self):
         return self.title
 
@@ -37,16 +37,12 @@ class Book(models.Model):
 class RatingManager(models.Manager):
     def validator(self, post_data):
         errors = {}
-
         review = post_data.get('review', '').strip()
         rating = post_data.get('rating')
-
         if len(review) < 10 or len(review) > 400:
             errors['review_length'] = "Reviews must be between 10 and 400 characters."
-
         if rating and not (1 <= int(rating) <= 5):
             errors['rating_range'] = "Rating must be between 1 and 5."
-
         return errors
 
 
@@ -75,6 +71,14 @@ class RatingForm(forms.ModelForm):
             'review': forms.Textarea(attrs={"class": "review-box", "rows": 4, "placeholder": "Write your review..."}),
         }
 
+class ReviewReply(models.Model):
+    rating = models.OneToOneField(Rating, related_name='reply', on_delete=models.CASCADE)
+    responder = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    message = models.TextField(max_length=1000)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Reply by {self.responder.username} to {self.rating.creator.username}'s review"
 
 class GalleryImage(models.Model):  # ✅ Ensured class declaration is complete
     title = models.CharField(max_length=100, unique=True)

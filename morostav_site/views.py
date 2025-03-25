@@ -9,7 +9,8 @@ from django.utils.html import strip_tags
 from django.views.decorators.csrf import csrf_exempt
 import json
 from django.conf import settings
-from .models import Book, Rating, User, GalleryImage, Genre, Event
+from .models import Book, Rating, User, GalleryImage, Genre, Event,ReviewReply
+from django.views.decorators.http import require_POST
 from django.conf.urls.static import static
 
 # Admin check
@@ -84,6 +85,7 @@ def dashboard(request):
         "avg_rating": round(Rating.objects.aggregate(avg=Avg('rating'))['avg'] or 0, 2),
         "total_users": User.objects.count(),
         "latest_reviews": Rating.objects.select_related('creator', 'book').order_by('-created_at')[:5],
+        "allow_replies": True,
     }
     return render(request, "dashboard.html", context)
 
@@ -119,37 +121,102 @@ def gallery(request):
     return render(request, "gallery.html", {"gallery_images": GalleryImage.objects.all()})
 
 # Single Book Detail
+def all_reviews_for_book(request, book_id):
+    book = get_object_or_404(Book, id=book_id)
+    all_reviews = book.ratings.all().order_by('-created_at')
+    return render(request, 'all_reviews.html', {
+        'book': book,
+        'all_reviews': all_reviews
+    })
 def book(request, book_id):
-    book = get_object_or_404(Book.objects.annotate(avg_rating=Avg('rating__rating')), id=book_id)
-    return render(request, 'books.html', {'book': book})
-
+    book = get_object_or_404(Book.objects.annotate(avg_rating=Avg('ratings__rating')), id=book_id)
+    latest_reviews = book.ratings.all().order_by('-created_at')[:3]
+    total_reviews = book.ratings.count()
+    return render(request, 'book_review.html', {
+        'book': book,
+        'latest_reviews': latest_reviews,
+        'total_reviews': total_reviews,
+    })
 # Add Review
-@login_required
+
 def add_review(request, book_id):
-    """Allows users to leave reviews & ratings for a specific book."""
-    book = get_object_or_404(Book, id=book_id)   
+    """Allows users to leave ONE review & rating per book."""
+    book = get_object_or_404(Book, id=book_id)
+    # Check if the user already reviewed this book
+    existing_review = Rating.objects.filter(book=book, creator=request.user).first()
+    if existing_review:
+        messages.warning(request, "You've already reviewed this book. Want to update it?")
+        return redirect('book', book_id=book.id)
+
+    # Validate input
+    errors = Rating.objects.validator(request.POST)
+    if errors:
+        for message in errors.values():
+            messages.error(request, message)
+        return redirect('book', book_id=book.id)
+
+    # Create new rating
+    Rating.objects.create(
+        book=book,
+        rating=int(request.POST['rating']),
+        review=request.POST['review'],
+        creator=request.user
+    )
+    messages.success(request, "Review added successfully!")
+    return redirect('book', book_id=book.id)
+
+@login_required
+def edit_review(request, book_id):
+    """Allows a user to edit their existing review for a book."""
+    book = get_object_or_404(Book, id=book_id)
+    review = Rating.objects.filter(book=book, creator=request.user).first()
+    if not review:
+        messages.error(request, "You haven't reviewed this book yet.")
+        return redirect('book', book_id=book.id)
     if request.method == "POST":
         errors = Rating.objects.validator(request.POST)
         if errors:
             for message in errors.values():
                 messages.error(request, message)
-            return redirect(f'/books/{book_id}')     
-        new_rating = Rating.objects.create(
-            rating=int(request.POST['rating']),
-            review=request.POST['review'],
-            creator=request.user
-        )
-        book.rating.add(new_rating)
-        messages.success(request, "Review added successfully!")
-    return redirect(f'/books/{book_id}')
+            return redirect('edit_review', book_id=book.id)
+        review.rating = int(request.POST['rating'])
+        review.review = request.POST['review']
+        review.save()
+        messages.success(request, "Your review has been updated.")
+        return redirect('book', book_id=book.id)
+    return render(request, 'edit_review.html', {
+        'book': book,
+        'review': review
+    })
 
+@login_required
+@user_passes_test(lambda u: u.is_staff)
+def reply_to_review(request, review_id):
+    review = get_object_or_404(Rating, id=review_id)
+
+    if request.method == "POST":
+        message = request.POST.get('message', '').strip()
+        if not message:
+            messages.error(request, "Reply message cannot be empty.")
+            return redirect('book', book_id=review.book.id)
+
+        # Prevent multiple replies
+        if hasattr(review, 'reply'):
+            messages.error(request, "You've already replied to this review.")
+            return redirect('book', book_id=review.book.id)
+        ReviewReply.objects.create(
+            rating=review,
+            responder=request.user,
+            message=message
+        )
+        messages.success(request, "Reply posted successfully.")
+        return redirect('book', book_id=review.book.id)
+    return redirect('book', book_id=review.book.id)
 # About Page
 def about(request):
     return render(request, "about.html")
 
 # Books Homepage (List of Books)
-
-
 def books_home(request):
     books = Book.objects.annotate(avg_rating=Avg('ratings__rating'))  # ✅ Using 'ratings__rating' now
     for book in books:
@@ -191,3 +258,5 @@ def calendar_view(request):
     events = Event.objects.order_by('start_time')  # Sort by date
     return render(request, "calendar.html", {"events": events})
 
+def new_review(request):
+    return render(request,'add_review.html')

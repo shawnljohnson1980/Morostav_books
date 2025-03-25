@@ -89,3 +89,43 @@ body::after {
 .toggle-password.active i {
     transform: rotateY(180deg);
 }
+.star-rating-horizontal {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
+    margin: 20px 0;
+    position: relative;
+    flex-wrap: wrap;
+}
+
+.star-option {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+}
+
+.star-label {
+    font-size: 0.9rem;
+    color: rgba(80, 43, 128, 0.9);
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+.star-rating input[type="radio"] {
+    display: none;
+}
+
+.star-rating label {
+    font-size: 2rem;
+    color: rgba(255, 255, 255, 0.6);
+    cursor: pointer;
+    transition: transform 0.2s ease, color 0.2s ease;
+}
+
+.star-rating label:hover,
+.star-rating input[type="radio"]:checked + label {
+    color: gold;
+    transform: scale(1.2);
+}

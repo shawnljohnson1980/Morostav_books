@@ -12,14 +12,46 @@
 </head>
 
 <body>
-    <nav class="navbar navbar-dark bg-dark navbar-expand-md">
-        <div class="container-fluid">
-            <a class="btn" href="{% url 'books_home' %}">Morostav Books</a>
-            <a class="btn" href="{% url 'home' %}">Home</a>
-            <a href="{% url 'calendar' %}" class="btn btn-info">Event Calendar</a>
-        </div>
-    </nav>
-    <div class="container mt-5">
+        <div class="video-background">
+            <video autoplay muted loop id="bg-video">
+            <source src="{% static 'videos/enchanted_library.mp4' %}" style="no-repeat center center/cover" type="video/mp4">
+            Your browser does not support the video tag.
+            </video>
+            <div class="video-overlay-content">
+            <!-- Optional: Site title, buttons, nav, etc. -->
+            <h1>Welcome to Morostav Books</h1>
+            <p>Your next adventure starts here.</p>
+            </div>
+        </div>      
+        <nav class="navbar navbar-expand-md shadow-lg morostav-navbar">
+            <div class="container-fluid">
+                <a class="navbar-brand text-light fw-bold" href="/">Welcome to Morostav Books</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navcol-1">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navcol-1">
+                    <ul class="navbar-nav ms-auto d-flex gap-2">
+                        <li class="nav-item">
+                            <a href="/books_home" class="btn nav-btn">Books</a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="/user/to_login/" class="btn nav-btn">Login</a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="/about" class="btn nav-btn">About Me</a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="/books_home" class="btn nav-btn nav-btn-highlight">Browse Books</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>    
+    <div class="hero text-dark">
+        <h1>Morostav Books</h1>
+        <p>Your next adventure starts here.</p>
+        <a href="{% url 'books_home' %}" class="btn btn-info">Browse Books</a>
+    </div>
         <div class="col">
             <h3 class="mt-3">{{ book.title }}</h3>
             <!-- Display Cover Image -->
@@ -28,10 +60,8 @@
             {% else %}
                 <p><em>No cover image available</em></p>
             {% endif %}
-    
             <p><strong>Genre:</strong> {{ book.genre }}</p>
             <p><strong>ISBN:</strong> {{ book.isbn }}</p>
-    
             <!-- Display Overall Average Rating -->
             <p><strong>Overall Rating:</strong> 
                 {% if book.avg_rating %}
@@ -40,7 +70,6 @@
                     No ratings yet
                 {% endif %}
             </p>
-    
             <!-- Display All Reviews -->
             <h4>All Reviews</h4>
             {% if book.rating.all %}

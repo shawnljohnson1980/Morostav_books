@@ -10,26 +10,43 @@
     <link rel="stylesheet" href="{% static 'css/styles1.css' %}">
 </head>
 <body>
-    <nav class="navbar navbar-dark bg-dark navbar-expand-md shadow-lg">
-        <div class="container-fluid">
-            <a class="navbar-brand text-white" href="{% url 'books_home' %}">Admin Dashboard</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navcol-1">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navcol-1">
-                <ul class="navbar-nav ms-auto">
-                    <a href="{% url 'books_home' %}" class="btn">Books</a>
-                    <a href="{% url 'to_login' %}" class="btn">Login</a>
-                    <a href="{% url 'about' %}" class="btn">About Me</a>
-                    <a href="{% url 'user/log_out' %}" class="btn">Log out</a>
-                </ul>
+        <div class="video-background">
+            <video autoplay muted loop id="bg-video">
+            <source src="{% static 'videos/enchanted_library.mp4' %}" style="no-repeat center center/cover" type="video/mp4">
+            Your browser does not support the video tag.
+            </video>
+            <div class="video-overlay-content">
+            <!-- Optional: Site title, buttons, nav, etc. -->
+            <h1>Welcome to Morostav Books</h1>
+            <p>Your next adventure starts here.</p>
             </div>
-        </div>
-    </nav>
-
+        </div>      
+        <nav class="navbar navbar-expand-md shadow-lg morostav-navbar">
+            <div class="container-fluid">
+                <a class="navbar-brand text-light fw-bold" href="/">Welcome to Morostav Books</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navcol-1">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navcol-1">
+                    <ul class="navbar-nav ms-auto d-flex gap-2">
+                        <li class="nav-item">
+                            <a href="/books_home" class="btn nav-btn">Books</a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="/user/to_login/" class="btn nav-btn">Login</a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="/about" class="btn nav-btn">About Me</a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="/books_home" class="btn nav-btn nav-btn-highlight">Browse Books</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>    
     <div class="container mt-4">
         <h2 class="text-center">Manage Books & Reviews</h2>
-
         <!-- Book Addition Form -->
         <div class="card p-3 shadow mt-4">
             <h3>Add a New Book</h3>
@@ -51,7 +68,6 @@
                     <label>Cover Image:</label>
                     <input type="file" class="form-control" name="cover_image">
                 </div>
-
                 <!-- Genre Selection with Auto-Refresh -->
                 <div class="form-group mt-3">
                     <label>Genre:</label>
@@ -63,18 +79,15 @@
                         <option value="add">Add new</option>
                     </select>
                 </div>
-
                 <!-- Hidden New Genre Input -->
                 <div class="form-group mt-3" id="new_genre" style="display: none;">
                     <label>New Genre:</label>
                     <input type="text" class="form-control" name="new_genre" id="newGenreInput">
                     <button type="button" class="btn btn-info mt-2" onclick="addGenre()">Add Genre</button>
                 </div>
-
                 <button type="submit" class="btn btn-primary mt-4">Add Book</button>
             </form>
         </div>
-
         <!-- Review Filtering -->
         <div class="card p-3 shadow mt-4">
             <h3>Filter Reviews by Rating</h3>
@@ -87,7 +100,6 @@
                 <option value="1">1 Star</option>
             </select>
         </div>
-
         <!-- Reviews -->
         <div class="reviews mt-5">
             <h3>Recent Reviews</h3>
@@ -100,39 +112,41 @@
                                 <p class="card-text">Rated: {{ rating.rating }}/5</p>
                                 <p class="text-muted">"{{ rating.review }}"</p>
                                 
-                                {% if allow_replies %}
-                                <!-- Optional Reply Form -->
-                                <form method="POST" action="{% url 'reply_review' rating.id %}">
+                                {% if rating.reply %}
+                                <div class="mt-3 p-2 bg-dark text-white rounded">
+                                    <strong>Reply:</strong>
+                                    <p>{{ rating.reply.message }}</p>
+                                    <small class="text-muted">— {{ rating.reply.responder.username }}</small>
+                                </div>
+                            {% elif allow_replies %}
+                                <!-- Reply Form -->
+                                <form method="POST" action="{% url 'reply_to_review' rating.id %}">
                                     {% csrf_token %}
-                                    <textarea class="form-control mt-2" name="reply" placeholder="Write a reply"></textarea>
-                                    <button type="submit" class="btn btn-sm btn-secondary mt-2">Reply</button>
+                                    <textarea class="form-control mt-2" name="message" placeholder="Write a reply..."></textarea>
+                                    <button type="submit" class="btn btn-sm btn-indigo mt-2">Reply</button>
                                 </form>
-                                {% endif %}
-                            </div>
-                        </div>
-                    </div>
-                {% empty %}
+                            {% endif %}
+                            {% if rating.reply %}
+                                <span class="badge bg-success">Replied</span>
+                            {% endif %}
+                        {% empty %}
                     <p>No reviews yet. Be the first to review!</p>
-                {% endfor %}
+                        {% endfor %}
             </div>
         </div>
     </div>
-
     <script>
         function toggleGenreInput() {
             let genreSelect = document.getElementById("genreSelect");
             let newGenreField = document.getElementById("new_genre");
-
             if (genreSelect.value === "add") {
                 newGenreField.style.display = "block";
             } else {
                 newGenreField.style.display = "none";
             }
         }
-
         function addGenre() {
             let newGenreInput = document.getElementById("newGenreInput").value;
-
             if (newGenreInput.trim() !== "") {
                 fetch("{% url 'add_genre_ajax' %}", {
                     method: "POST",
@@ -158,11 +172,9 @@
                 });
             }
         }
-
         function filterReviews() {
             let selectedRating = document.getElementById("reviewFilter").value;
             let reviews = document.querySelectorAll(".review-item");
-
             reviews.forEach(review => {
                 if (selectedRating === "all" || review.getAttribute("data-rating") === selectedRating) {
                     review.style.display = "block";
