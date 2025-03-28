@@ -204,3 +204,41 @@ body {
   color: gold;
   transform: scale(1.2) rotate(-5deg);
 }
+.navbar.scrolled {
+  box-shadow: 0 0 20px var(--gold-highlight);
+  background-color: rgba(32, 18, 3, 0.98) !important;
+}
+.thumbnail:hover {
+  animation: sparkle 0.8s ease-in-out infinite alternate;
+  box-shadow: 0 0 8px rgba(255, 255, 255, 0.4);
+}
+
+@keyframes sparkle {
+  from {
+    box-shadow: 0 0 4px rgba(255, 255, 255, 0.1);
+    transform: scale(1.05);
+  }
+  to {
+    box-shadow: 0 0 14px rgba(255, 255, 255, 0.7);
+    transform: scale(1.1);
+  }
+}
+.star-rating label:hover,
+.star-rating input[type="radio"]:checked ~ label {
+  color: gold;
+  transform: scale(1.2) rotate(-5deg);
+  text-shadow:
+    0 0 5px gold,
+    0 0 10px rgba(255, 215, 0, 0.5),
+    0 0 15px rgba(255, 215, 0, 0.3);
+}
+.card {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: all 0.6s ease-in-out;
+}
+
+.card.fade-in {
+  opacity: 1;
+  transform: translateY(0);
+}
