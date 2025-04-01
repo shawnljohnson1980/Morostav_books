@@ -8,12 +8,15 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            background: url("{{ protocol }}://{{ domain }}{% static 'img/email_bg.png' %}") no-repeat center center;
+            background: #f4f4f4;  /* Fallback background color */
+            background-image: url("{{ protocol }}://{{ domain }}{% static 'img/email_bg.png' %}");
+            background-repeat: no-repeat;
             background-size: cover;
             color: #333;
             text-align: center;
             padding: 20px;
         }
+
         .email-container {
             max-width: 600px;
             background: rgba(255, 255, 255, 0.9);
@@ -21,6 +24,18 @@
             border-radius: 10px;
             margin: auto;
         }
+
+        h2 {
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+
+        p {
+            line-height: 1.6;
+            font-size: 16px;
+            margin-bottom: 15px;
+        }
+
         .btn {
             display: inline-block;
             padding: 12px 24px;
@@ -29,13 +44,37 @@
             text-decoration: none;
             border-radius: 6px;
             margin-top: 10px;
+            transition: background-color 0.3s ease;
         }
+
+        .btn:hover {
+            background-color: #3e1a63; /* Darker shade on hover */
+        }
+
         .message-box {
             background: #f5f5f5;
             padding: 10px;
             border-left: 4px solid #502b80;
             text-align: left;
             margin-top: 10px;
+            border-radius: 6px;
+        }
+
+        .footer {
+            font-size: 12px;
+            color: #999;
+            text-align: center;
+            padding-top: 20px;
+        }
+
+        @media (max-width: 600px) {
+            .email-container {
+                padding: 10px;
+            }
+
+            .btn {
+                padding: 10px 20px; /* Smaller button size on mobile */
+            }
         }
     </style>
 </head>
@@ -47,8 +86,12 @@
         <div class="message-box">
             <p>{{ message }}</p>
         </div>
-        <p>Reply directly to <a href="mailto:{{ email }}">{{ email }}</a></p>
+        <p>Reply directly to <a href="mailto:{{ email }}" class="btn">Reply to Sender</a></p>
         <p>Thank you,<br><strong>Morostav Books Team</strong></p>
+    </div>
+
+    <div class="footer">
+        <p>&copy; 2025 Morostav Books. All rights reserved.</p>
     </div>
 </body>
 </html>
