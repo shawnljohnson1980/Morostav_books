@@ -30,7 +30,8 @@ env.read_env(os.path.join(BASE_DIR, '.env'))
 SECRET_KEY = 'django-insecure-ih57jo=9w(p#a+5gi@e+_8&d7*ro%at)28isqeb33^=*#bb*71'
 
 DEBUG = env.bool('DEBUG', default=True)
-ALLOWED_HOSTS = ["127.0.0.1", "localhost"]
+ALLOWED_HOSTS = ['morostavbooks.com', 'www.morostavbooks.com', '127.0.0.1', 'localhost']
+
 
 AUTH_USER_MODEL ='user_login_app.User'
 # Application definition
