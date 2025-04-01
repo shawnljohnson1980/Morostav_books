@@ -17,6 +17,7 @@ import caldav
 
 # Define BASE_DIR
 BASE_DIR = Path(__file__).resolve().parent.parent
+
 # Initialize environ
 env = environ.Env()
 # Explicitly read from the .env file
@@ -84,17 +85,18 @@ WSGI_APPLICATION = 'morostav_books.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
+from pathlib import Path
+
+# Assuming BASE_DIR is defined like this at the top of settings.py
+BASE_DIR = Path(__file__).resolve().parent.parent
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'm_b',
-        'USER': 'morostav_user',
-        'PASSWORD': 'Slj@Kmj@0612$$%%',
-        'HOST': 'localhost',
-        'PORT': '5432',
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR.joinpath('m_b.sqlite3'),  # Using joinpath to combine paths
     }
 }
+
 
 # Initialize environment variables
 # CalDAV settings
