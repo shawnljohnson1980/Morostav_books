@@ -2,3 +2,7 @@
 /m_b.sqlite3
 /m_b
 docker-compose.yml
+/nginx
+/nginx.conf
+/sites-enabled
+/default.conf
