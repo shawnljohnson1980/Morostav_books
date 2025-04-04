@@ -6,4 +6,4 @@ docker-compose.yml
 /nginx.conf
 /sites-enabled
 /default.conf
-/nginx_files
+/./nginx_files
