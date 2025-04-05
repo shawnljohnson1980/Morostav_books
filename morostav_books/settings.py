@@ -81,11 +81,11 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'm_b.db',
-        'USER': 'morostav',
-        'PASSWORD': 'Slj@Kmj@0612$$',
-        'HOST': 'mariadb',  
-        'PORT': '3306',
+        'NAME': os.environ.get('DB_NAME,m_b.sql'),
+        'USER': os.environ.get('DB_USER'),
+        'PASSWORD': os.environ.get('DB_PASSWORD'),
+        'HOST': os.environ.get('DB_HOST', 'localhost'),
+        'PORT': os.environ.get('DB_PORT', '3306'),
     }
 }
 

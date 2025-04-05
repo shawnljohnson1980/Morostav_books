@@ -1,5 +1,5 @@
 /.env
-/m_b.sqlite3
+/m_b.sql
 /m_b
 docker-compose.yml
 /nginx
