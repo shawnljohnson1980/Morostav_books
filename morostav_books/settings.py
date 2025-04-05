@@ -16,21 +16,13 @@ from pathlib import Path
 import caldav
 import pymysql
 pymysql.install_as_MySQLdb()
-
-
-# Define BASE_DIR
 BASE_DIR = Path(__file__).resolve().parent.parent
-
-# Initialize environ
 env = environ.Env()
-# Explicitly read from the .env file
 env.read_env(os.path.join(BASE_DIR, '.env'))
-
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
-# SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'django-insecure-ih57jo=9w(p#a+5gi@e+_8&d7*ro%at)28isqeb33^=*#bb*71'
 
 DEBUG = env.bool('DEBUG', default= False)
@@ -38,7 +30,7 @@ ALLOWED_HOSTS = ['morostavbooks.com', 'www.morostavbooks.com', '127.0.0.1', 'loc
 
 
 AUTH_USER_MODEL ='user_login_app.User'
-# Application definition
+
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -84,30 +76,18 @@ TEMPLATES = [
 
 
 WSGI_APPLICATION = 'morostav_books.wsgi.application'
-
-
-# Database
-# https://docs.djangoproject.com/en/5.1/ref/settings/#databases
-from pathlib import Path
-
-# Assuming BASE_DIR is defined like this at the top of settings.py
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql',  # Use the MySQL backend
+        'ENGINE': 'django.db.backends.mysql',
         'NAME': 'm_b.db',
         'USER': 'morostav',
         'PASSWORD': 'Slj@Kmj@0612$$',
-        'HOST': 'mariadb',  # This should match the service name in docker-compose
+        'HOST': 'mariadb',  
         'PORT': '3306',
     }
 }
-# Initialize environment variables
-# CalDAV settings
-
-
-# Now load the variables
 
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
