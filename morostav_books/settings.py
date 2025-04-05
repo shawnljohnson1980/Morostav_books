@@ -97,8 +97,8 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',  # Use the MySQL backend
         'NAME': 'm_b.db',
-        'USER': 'your_db_user',
-        'PASSWORD': 'your_db_password',
+        'USER': 'morostav',
+        'PASSWORD': 'Slj@Kmj@0612$$',
         'HOST': 'mariadb',  # This should match the service name in docker-compose
         'PORT': '3306',
     }
