@@ -14,6 +14,9 @@ import os
 import environ
 from pathlib import Path
 import caldav
+import pymysql
+pymysql.install_as_MySQLdb()
+
 
 # Define BASE_DIR
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -92,12 +95,14 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR.joinpath('m_b.sqlite3'),  # Using joinpath to combine paths
+        'ENGINE': 'django.db.backends.mysql',  # Use the MySQL backend
+        'NAME': 'm_b.db',
+        'USER': 'your_db_user',
+        'PASSWORD': 'your_db_password',
+        'HOST': 'mariadb',  # This should match the service name in docker-compose
+        'PORT': '3306',
     }
 }
-
-
 # Initialize environment variables
 # CalDAV settings
 
