@@ -12,6 +12,10 @@ from django.conf import settings
 from .models import Book, Rating, User, GalleryImage, Genre, Event,ReviewReply
 from django.views.decorators.http import require_POST
 from django.conf.urls.static import static
+from time import time
+
+def timestamp_context(request):
+    return {'timestamp': int(time())}
 
 
 def is_admin(user):
@@ -71,6 +75,24 @@ def contact_view(request):
         else:
             messages.error(request, "All fields are required. Please fill out the form completely.")  
     return render(request, "contact.html")
+
+def contact(request):
+    if request.method == "POST":
+        first_name = request.POST.get('first_name')
+        last_name = request.POST.get('last_name')
+        email = request.POST.get('email')
+        subject = request.POST.get('subject')
+        message = request.POST.get('message')
+
+        if first_name and last_name and email and subject and message:
+            send_contact_form_email(first_name, last_name, email, subject, message)
+            messages.success(request, "Your message has been sent successfully!")
+            return redirect('contact')
+        else:
+            messages.error(request, "All fields are required. Please fill out the form completely.")
+
+    return render(request, "contact.html")
+
 @login_required
 @user_passes_test(is_admin)
 def dashboard(request):
@@ -238,6 +260,3 @@ def calendar_view(request):
 
 def new_review(request):
     return render(request,'add_review.html')
-
-def contact(request):
-    return render(request,'contact.html')
