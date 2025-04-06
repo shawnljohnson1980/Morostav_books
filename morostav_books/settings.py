@@ -14,8 +14,7 @@ import os
 import environ
 from pathlib import Path
 import caldav
-import pymysql
-pymysql.install_as_MySQLdb()
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 env = environ.Env()
 env.read_env(os.path.join(BASE_DIR, '.env'))
@@ -79,16 +78,24 @@ TEMPLATES = [
 WSGI_APPLICATION = 'morostav_books.wsgi.application'
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+
+def getenv(key, fallback=None, required=False):
+    val = os.environ.get(key, fallback)
+    if required and val is None:
+        raise Exception(f"Environment variable '{key}' is required but not set.")
+    return val
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': os.environ.get('DB_NAME'),
-        'USER': os.environ.get('DB_USER'),
-        'PASSWORD': os.environ.get('DB_PASSWORD'),
-        'HOST': os.environ.get('DB_HOST', 'mariadb'),
-        'PORT': os.environ.get('DB_PORT', '3306'),
+        'NAME': getenv('DB_NAME', required=True),
+        'USER': getenv('DB_USER', required=True),
+        'PASSWORD': getenv('DB_PASSWORD', required=True),
+        'HOST': getenv('DB_HOST', '127.0.0.1'),
+        'PORT': getenv('DB_PORT', '3306'),
     }
 }
+
 
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
