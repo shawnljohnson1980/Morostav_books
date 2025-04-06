@@ -26,7 +26,8 @@ env.read_env(os.path.join(BASE_DIR, '.env'))
 SECRET_KEY = 'django-insecure-ih57jo=9w(p#a+5gi@e+_8&d7*ro%at)28isqeb33^=*#bb*71'
 
 DEBUG = env.bool('DEBUG', default= False)
-ALLOWED_HOSTS = ['morostavbooks.com', 'www.morostavbooks.com', '127.0.0.1', 'localhost']
+ALLOWED_HOSTS = ['morostavbooks.com', 'www.morostavbooks.com', '127.0.0.1:8000', 'localhost','127.0.0.1:8080']
+command: ["./wait-for-it.sh", "mariadb:3306", "--", "gunicorn", "morostav_books.wsgi:application", "--bind", "0.0.0.0:8000"]
 
 
 AUTH_USER_MODEL ='user_login_app.User'
@@ -81,10 +82,10 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': os.environ.get('DB_NAME,m_b.sql'),
+        'NAME': os.environ.get('DB_NAME'),
         'USER': os.environ.get('DB_USER'),
         'PASSWORD': os.environ.get('DB_PASSWORD'),
-        'HOST': os.environ.get('DB_HOST', 'localhost'),
+        'HOST': os.environ.get('DB_HOST', 'mariadb'),
         'PORT': os.environ.get('DB_PORT', '3306'),
     }
 }
