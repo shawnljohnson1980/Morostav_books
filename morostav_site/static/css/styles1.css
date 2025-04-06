@@ -242,3 +242,48 @@ body {
   opacity: 1;
   transform: translateY(0);
 }
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--gold-highlight);
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.2);
+}
+.glow-quill {
+  box-shadow: 0 0 20px var(--amber-glow);
+  border: 5px solid var(--amber-glow);
+  transition: box-shadow 0.3s ease-in-out;
+  opacity: 95%;
+}
+
+.glow-quill {
+  animation: softGlow 3s ease-in-out infinite alternate;
+}
+
+@keyframes softGlow {
+  from {
+    box-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+  }
+  to {
+    box-shadow: 0 0 25px rgba(255, 215, 0, 1);
+  }
+}
+.fade-in-scroll {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 1s ease-out, transform 1s ease-out;
+}
+
+.fade-in-scroll.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+.nav-link:hover {
+  color: var(--gold-highlight);
+  text-shadow: 0 0 5px rgba(255, 255, 255, 0.3);
+}

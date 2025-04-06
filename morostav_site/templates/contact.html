@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+    <title>Contact Me</title>
+    {% load static %}
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/forms.css' %}?v={{ timestamp }}">
+</head>
+<body>
+<a class="navbar-brand text-white" href="{% url 'home' %}">Welcome to Morostav Books</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navcol-1">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navcol-1">
+                <ul class="navbar-nav ms-auto">
+                {% if request.resolver_match.url_name != 'books_home' %}
+                    <li class="nav-item">
+                    <a class="nav-link" href="{% url 'books_home' %}">Books</a>
+                    </li>
+                {% endif %}
+                {% if request.resolver_match.url_name != 'about' %}
+                    <li class="nav-item">
+                    <a class="nav-link" href="{% url 'about' %}">About Me</a>
+                    </li>
+                {% endif %}
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'calendar' %}">Calendar</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'contact' %}">Contact</a>
+                </li>
+                {% if request.user.is_authenticated %}
+                    <li class="nav-item">
+                    <a class="nav-link" href="{% url 'logout' %}">Logout</a>
+                    </li>
+                    {% if request.user.is_staff %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'add_book' %}">Add Book</a>
+                    </li>
+                    li class="nav-item">
+                        <a class="nav-link" href="{% url 'admin_dashboard' %}">Admin Dashboard</a>
+                    </li>
+                    {% endif %}
+                {% else %}
+                    {% if request.resolver_match.url_name != 'log_in' %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'to_login' %}">Login</a>
+                    </li>
+                    {% endif %}
+                {% endif %}
+                </ul>
+            </div>
+        </div>
+<div style="height:675px;"></div> 
+<div class="form-container">
+    <div class="container mt-5">
+        <h1 class="shadow"></h1>
+        <form class="border-dark shadow p-3 form-container" action="/send_contact_form_email" method="POST">
+            {% for message in messages %}
+            <p>{{ message }}</p>
+            {% endfor %}
+            {% csrf_token %}
+            <p class="text-white border-rider"style="color: rgba(80, 43, 128, 0.6);">Send Me a Message</p>       
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group position-relative"><label style="color: rgba(80, 43, 128, 0.9);">First Name</label>
+                        <input class="form-control" type="text" placeholder="First Name" name="first_name"required> 
+                    </div>   
+                        <div class="form-group position-relative"><label style="color: rgba(80, 43, 128, 0.9);">Last Name</label>
+                            <input class="form-control" type="text" placeholder="Last Name" name="Last Name"required>
+                        </div> 
+                            <div class="form-group position-relative">
+                                <label style="color: rgba(80, 43, 128, 0.9);">Email</label>
+                                <input class="form-control" type="email" name="email" id="email" placeholder="Enter Your Email Address" required>
+                            </div>
+                            <div class="form-group position-relative">
+                                <label style="color: rgba(80, 43, 128, 0.9);">Subject</label>
+                                <input class="form-control" type="subject" name="subject" id="subject" placeholder="What can I do for you?" required>
+                            </div>   
+                        <div class="form-group position-relative">
+                            <label style="color: rgba(80, 43, 128, 0.9);">Message</label>
+                            <textarea id="textarea" class="form-control" type="textarea" rows="6" cols="100" placeholder="Send us your message"></textarea>
+                        </div>    
+                        <div class="form-group text-center mt-3">
+                    <div class="form-group text-center mt-3"><button class="btn text-white" style="margin-top:29px; background: rgba(80, 43, 128, 0.6);" type="submit">Send Mail</button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div> 
+</div>       
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" 
+integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" 
+crossorigin="anonymous"></script>  
+</body>
+</html>

@@ -13,11 +13,10 @@ from .models import Book, Rating, User, GalleryImage, Genre, Event,ReviewReply
 from django.views.decorators.http import require_POST
 from django.conf.urls.static import static
 
-# Admin check
+
 def is_admin(user):
     return user.is_authenticated and user.is_staff
 
-# Homepage View
 def index(request):
     latest_reviews = Rating.objects.select_related('creator', 'book').order_by('-created_at')[:3]
     featured_book = Book.objects.annotate(avg_rating=Avg('ratings__rating')).first()
@@ -27,11 +26,11 @@ def index(request):
         'featured_book': featured_book,
         'gallery_images': gallery_images
     })
-# Contact Form
-def send_contact_form_email(name, email, subject, message):
+def send_contact_form_email(first_name,last_name, email, subject, message):
     subject_line = f"New Contact Form Submission: {subject}"
     html_message = render_to_string('emails/contact_form_submission.html', {
-        'name': name,
+        'first_name': first_name,
+        'last_name': last_name,
         'email': email,
         'subject': subject,
         'message': message,
@@ -42,7 +41,6 @@ def send_contact_form_email(name, email, subject, message):
     from_email = settings.DEFAULT_FROM_EMAIL
     to_email = [settings.CONTACT_EMAIL] 
     send_mail(subject_line, plain_message, from_email, to_email, html_message=html_message)
-
 @login_required
 @user_passes_test(is_admin)
 def add_event(request):
@@ -58,7 +56,6 @@ def add_event(request):
         )
         return JsonResponse({"success": True, "event_id": event.id})
     return JsonResponse({"success": False, "error": "Invalid request"}, status=400)
-
 @login_required
 @user_passes_test(is_admin)
 def contact_view(request):
@@ -74,8 +71,6 @@ def contact_view(request):
         else:
             messages.error(request, "All fields are required. Please fill out the form completely.")  
     return render(request, "contact.html")
-
-# Admin Dashboard
 @login_required
 @user_passes_test(is_admin)
 def dashboard(request):
@@ -100,7 +95,6 @@ def calendar_view(request):
     """Render the calendar page."""
     return render(request, "calendar.html")
 
-# AJAX Genre Addition
 def add_genre_ajax(request):
     if request.method == "POST":
         import json
@@ -111,16 +105,13 @@ def add_genre_ajax(request):
             return JsonResponse({"success": True, "genre_id": genre.id, "created": created})  
     return JsonResponse({"success": False})
 
-# Logout View
 def log_out(request):
     request.session.flush()
     return redirect('/')
 
-# Gallery View
 def gallery(request):
     return render(request, "gallery.html", {"gallery_images": GalleryImage.objects.all()})
 
-# Single Book Detail
 def all_reviews_for_book(request, book_id):
     book = get_object_or_404(Book, id=book_id)
     all_reviews = book.ratings.all().order_by('-created_at')
@@ -137,25 +128,19 @@ def book(request, book_id):
         'latest_reviews': latest_reviews,
         'total_reviews': total_reviews,
     })
-# Add Review
-
 def add_review(request, book_id):
     """Allows users to leave ONE review & rating per book."""
     book = get_object_or_404(Book, id=book_id)
-    # Check if the user already reviewed this book
+    
     existing_review = Rating.objects.filter(book=book, creator=request.user).first()
     if existing_review:
         messages.warning(request, "You've already reviewed this book. Want to update it?")
         return redirect('book', book_id=book.id)
-
-    # Validate input
     errors = Rating.objects.validator(request.POST)
     if errors:
         for message in errors.values():
             messages.error(request, message)
         return redirect('book', book_id=book.id)
-
-    # Create new rating
     Rating.objects.create(
         book=book,
         rating=int(request.POST['rating']),
@@ -164,7 +149,6 @@ def add_review(request, book_id):
     )
     messages.success(request, "Review added successfully!")
     return redirect('book', book_id=book.id)
-
 @login_required
 def edit_review(request, book_id):
     """Allows a user to edit their existing review for a book."""
@@ -188,18 +172,15 @@ def edit_review(request, book_id):
         'book': book,
         'review': review
     })
-
 @login_required
 @user_passes_test(lambda u: u.is_staff)
 def reply_to_review(request, review_id):
     review = get_object_or_404(Rating, id=review_id)
-
     if request.method == "POST":
         message = request.POST.get('message', '').strip()
         if not message:
             messages.error(request, "Reply message cannot be empty.")
             return redirect('book', book_id=review.book.id)
-
         # Prevent multiple replies
         if hasattr(review, 'reply'):
             messages.error(request, "You've already replied to this review.")
@@ -215,15 +196,12 @@ def reply_to_review(request, review_id):
 # About Page
 def about(request):
     return render(request, "about.html")
-
 # Books Homepage (List of Books)
 def books_home(request):
     books = Book.objects.annotate(avg_rating=Avg('ratings__rating'))  # ✅ Using 'ratings__rating' now
     for book in books:
         book.latest_reviews = book.ratings.all().order_by('-created_at')[:3]
     return render(request, 'books.html', {'books': books})
-
-
 # Add Book (Admin Only)
 @login_required
 @user_passes_test(is_admin)
@@ -260,3 +238,6 @@ def calendar_view(request):
 
 def new_review(request):
     return render(request,'add_review.html')
+
+def contact(request):
+    return render(request,'contact.html')
