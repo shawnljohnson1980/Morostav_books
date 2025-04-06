@@ -10,10 +10,17 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
+from pathlib import Path
 import os
 import environ
-from pathlib import Path
 import caldav
+from dotenv import load_dotenv
+
+BASE_DIR = Path(__file__).resolve().parent.parent
+
+load_dotenv(dotenv_path=os.path.join(BASE_DIR, '.env.dev'))
+
+
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 env = environ.Env()
@@ -91,7 +98,7 @@ DATABASES = {
         'NAME': getenv('DB_NAME', required=True),
         'USER': getenv('DB_USER', required=True),
         'PASSWORD': getenv('DB_PASSWORD', required=True),
-        'HOST': getenv('DB_HOST', '127.0.0.1'),
+        'HOST': getenv('DB_HOST','mariadb'),
         'PORT': getenv('DB_PORT', '3306'),
     }
 }
