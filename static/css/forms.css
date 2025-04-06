@@ -1,3 +1,5 @@
+
+
 /* Background Image for Form Pages */
 body {
     background: url("/static/img/form-bg.webp") center/cover no-repeat fixed;
@@ -88,4 +90,143 @@ body::after {
 
 .toggle-password.active i {
     transform: rotateY(180deg);
+}
+.star-rating-horizontal {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
+    margin: 20px 0;
+    position: relative;
+    flex-wrap: wrap;
+}
+
+.star-option {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+}
+
+.star-label {
+    font-size: 0.9rem;
+    color: rgba(80, 43, 128, 0.9);
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+.star-rating input[type="radio"] {
+    display: none;
+}
+
+.star-rating label {
+    font-size: 2rem;
+    color: rgba(255, 255, 255, 0.6);
+    cursor: pointer;
+    transition: transform 0.2s ease, color 0.2s ease;
+}
+
+.star-rating label:hover,
+.star-rating input[type="radio"]:checked + label {
+    color: gold;
+    transform: scale(1.2);
+}
+::-webkit-scrollbar {
+    width: 10px;
+}
+::-webkit-scrollbar-thumb {
+background: var(--gold-highlight);
+border-radius: 10px;
+}
+
+::-webkit-scrollbar-track {
+background: rgba(0, 0, 0, 0.2);
+}
+.form-container {
+max-width: 700px;
+margin: auto;
+background: rgba(20, 20, 20, 0.6);
+padding: 30px;
+border-radius: 15px;
+box-shadow: 0 0 20px rgba(128, 90, 200, 0.3);
+backdrop-filter: blur(5px);
+}
+
+.form-container input,.form-container textarea {
+width: 100%;
+padding: 15px 20px;
+font-size: 1.1rem;
+margin-bottom: 20px;
+border-radius: 10px;
+border: 1px solid rgba(255, 255, 255, 0.15);
+background-color: rgba(255, 255, 255, 0.08);
+color: #fff;
+transition: all 0.3s ease;
+}
+
+.form-container input:focus,
+.form-container textarea:focus {
+background-color: rgba(255, 255, 255, 0.1);
+border-color: rgba(121, 9, 136, 0.6);
+box-shadow: 0 0 10px rgba(121, 9, 136, 0.4);
+outline: none;
+}
+
+.form-container label {
+color: rgba(200, 180, 255, 0.9);
+font-weight: bold;
+margin-bottom: 5px;
+display: block;
+}
+
+.form-container .btn {
+font-weight: bold;
+font-size: 1.1rem;
+padding: 12px 25px;
+border-radius: 12px;
+transition: all 0.3s ease-in-out;
+background: var(--purple-base, rgba(110, 8, 124, 0.774));
+box-shadow: 0 0 10px rgba(94, 14, 47, 0.6);
+}
+
+.form-container .btn:hover {
+background: var(--purple-hover, rgba(100, 6, 115, 1));
+transform: scale(1.05);
+box-shadow: 0 0 15px rgba(121, 9, 136, 0.6);
+}
+.form-container {
+opacity: 0;
+transform: translateY(30px);
+animation: fadeInForm 1s ease forwards;
+}
+
+@keyframes fadeInForm {
+to {
+    opacity: 1;
+    transform: translateY(0);
+    }
+}
+.contact-form .form-control {
+    font-size: 1.3rem;
+    padding: 18px 24px;
+    border-radius: 12px;
+    background-color: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(200, 200, 200, 0.35);
+    color: white;
+    box-shadow: inset 0 0 6px rgba(132, 53, 143, 0.25);
+    transition: all 0.3s ease-in-out;
+}
+
+.contact-form .form-control:focus {
+    background-color: rgba(255, 255, 255, 0.15);
+    box-shadow: 0 0 14px rgba(133, 53, 143, 0.281);
+    border-color: rgba(121, 9, 136, 0.6);
+    box-shadow: 0 0 30px rgba(121, 9, 136, 0.3);
+
+    opacity: 90%;
+}
+.contact-form textarea {
+    min-height: 180px;
+    resize: vertical;
+    box-shadow: inset 0 0 6px rgba(132, 53, 143, 0.25);
 }

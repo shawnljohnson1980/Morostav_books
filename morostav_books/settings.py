@@ -31,8 +31,8 @@ env.read_env(os.path.join(BASE_DIR, '.env'))
 
 SECRET_KEY = 'django-insecure-ih57jo=9w(p#a+5gi@e+_8&d7*ro%at)28isqeb33^=*#bb*71'
 
-DEBUG = env.bool('DEBUG', default= True)
-ALLOWED_HOSTS = ['morostavbooks.com', 'www.morostavbooks.com', '127.0.0.1:8000', 'localhost','127.0.0.1:8080']
+DEBUG = env.bool('DEBUG', default= False)
+ALLOWED_HOSTS = ['morostavbooks.com', 'www.morostavbooks.com']
 command: ["./wait-for-it.sh", "mariadb:3306", "--", "gunicorn", "morostav_books.wsgi:application", "--bind", "0.0.0.0:8000"]
 
 
@@ -165,3 +165,21 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'file': {
+            'level': 'ERROR',
+            'class': 'logging.FileHandler',
+            'filename': BASE_DIR / 'error.log',
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['file'],
+            'level': 'ERROR',
+            'propagate': True,
+        },
+    },
+}
