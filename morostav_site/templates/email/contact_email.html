@@ -15,8 +15,16 @@
             color: #333;
             text-align: center;
             padding: 20px;
+            .message-box {
+                white-space: pre-line; /* ✨ Preserve newlines and wrap */
+            }
         }
-
+        <!--[if gte mso 9]>
+            <v:background xmlns:v="urn:schemas-microsoft-com:vml" fill="t">
+              <v:fill type="tile" src="{{ protocol }}://{{ domain }}{% static 'img/email_bg.png' %}" color="#f4f4f4"/>
+            </v:background>
+            <![endif]-->
+            
         .email-container {
             max-width: 600px;
             background: rgba(255, 255, 255, 0.9);

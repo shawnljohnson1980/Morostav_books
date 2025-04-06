@@ -71,21 +71,20 @@ TEMPLATES = [
         'DIRS': [os.path.join(BASE_DIR, 'templates'), EMAIL_TEMPLATE_DIR],  # ✅ Now it's defined
         'APP_DIRS': True,
         'OPTIONS': {
-            'context_processors': [
+            'context_processors':[
                 'django.template.context_processors.debug',
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 'morostav_site.context_processors.timestamp_context',
-            ],
-        },
+        ],     
     },
+},
 ]
 
 
 WSGI_APPLICATION = 'morostav_books.wsgi.application'
 BASE_DIR = Path(__file__).resolve().parent.parent
-
 
 def getenv(key, fallback=None, required=False):
     val = os.environ.get(key, fallback)

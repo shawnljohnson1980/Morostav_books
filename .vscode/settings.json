@@ -1,0 +1,7 @@
+{
+    "python.testing.pytestArgs": [
+        "morostav_books"
+    ],
+    "python.testing.unittestEnabled": false,
+    "python.testing.pytestEnabled": true
+}
