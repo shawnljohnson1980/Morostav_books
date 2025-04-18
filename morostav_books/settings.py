@@ -32,7 +32,13 @@ env.read_env(os.path.join(BASE_DIR, '.env'))
 SECRET_KEY = 'django-insecure-ih57jo=9w(p#a+5gi@e+_8&d7*ro%at)28isqeb33^=*#bb*71'
 
 DEBUG = env.bool('DEBUG', default= False)
-ALLOWED_HOSTS = ['morostavbooks.com', 'www.morostavbooks.com']
+ALLOWED_HOSTS = [
+    'morostavbooks.com',
+    'www.morostavbooks.com',
+    'localhost',
+    '127.0.0.1',
+    '[::1]',
+]
 command: ["./wait-for-it.sh", "mariadb:3306", "--", "gunicorn", "morostav_books.wsgi:application", "--bind", "0.0.0.0:8000"]
 
 
