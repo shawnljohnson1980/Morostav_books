@@ -1,0 +1,7 @@
+ALTER TABLE `user_login_app_user` MODIFY `password` varchar(20) NOT NULL; (params [])
+ALTER TABLE `user_login_app_user` MODIFY `password` varchar(20) NOT NULL; (params [])
+ALTER TABLE `user_login_app_user` MODIFY `password` varchar(20) NOT NULL; (params [])
+ALTER TABLE `user_login_app_user` MODIFY `password` varchar(20) NOT NULL; (params [])
+ALTER TABLE `user_login_app_user` MODIFY `password` varchar(20) NOT NULL; (params [])
+ALTER TABLE `user_login_app_user` MODIFY `password` varchar(20) NOT NULL; (params [])
+ALTER TABLE `user_login_app_user` MODIFY `password` varchar(20) NOT NULL; (params [])

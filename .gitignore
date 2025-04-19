@@ -10,4 +10,7 @@ docker-compose.yml
 /.env.dev
 /m_b.db
 /gunicorn.service
+/gunicorn.sock
+/error.log
+/rate_limit_middleware.py
 

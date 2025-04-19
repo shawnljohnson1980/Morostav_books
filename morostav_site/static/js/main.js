@@ -148,3 +148,8 @@ function getCookie(name) {
     return cookieValue;
 }
 
+<script>
+window.addEventListener("beforeunload", function (e) {
+    navigator.sendBeacon("{% url 'logout' %}");
+});
+</script>

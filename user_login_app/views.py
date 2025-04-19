@@ -40,12 +40,14 @@ def user_create(request):
         username = request.POST['username']  # Added username field
         email = request.POST['email']
         password = request.POST['password']
+        confirm_password = request.POST['confirm_password']
     user = user_manager.create_user(  
         username=username,  # Pass username into the model
         email=email,
         first_name=first_name,
         last_name=last_name,
-        password=password
+        password=password,
+        confrim_password=confirm_password
     )
     log_in(request, user)
     messages.info(request, f"Account for {username} created successfully!")
@@ -96,12 +98,16 @@ def send_reset_email(user, domain, uid, token):
     email.attach_alternative(html_content, "text/html")
     email.send()
 
+from django.views.decorators.csrf import csrf_exempt
+
+@csrf_exempt  # Needed because sendBeacon skips CSRF
 def log_out(request):
-    logout(request)  
-    messages.info(request, "You have been logged out.")
-    if request.session:
+    if request.user.is_authenticated:
+        logout(request)
         request.session.flush()
-    return redirect('home')
+        return JsonResponse({"message": "Logged out on unload"})
+    return JsonResponse({"message": "No active session"}, status=204)
+
 
 def password_reset_done(request):
     user = request.user  

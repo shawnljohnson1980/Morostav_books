@@ -14,6 +14,10 @@ from django.views.decorators.http import require_POST
 from django.conf.urls.static import static
 from time import time
 from .models import BlockedIP
+#import logging
+
+#logger = logging.getLogger(__name__)
+# logger.info("User logged in from IP: %s", request.META.get('REMOTE_ADDR'))
 
 
 def timestamp_context(request):
@@ -31,6 +35,7 @@ def index(request):
         'featured_book': featured_book,
         'gallery_images': gallery_images
     })
+
 def send_contact_form_email(first_name,last_name, email, subject, message):
     subject_line = f"New Contact Form Submission: {subject}"
     html_message = render_to_string('emails/contact_form_submission.html', {
@@ -46,6 +51,7 @@ def send_contact_form_email(first_name,last_name, email, subject, message):
     from_email = settings.DEFAULT_FROM_EMAIL
     to_email = [settings.CONTACT_EMAIL] 
     send_mail(subject_line, plain_message, from_email, to_email, html_message=html_message)
+
 @login_required
 @user_passes_test(is_admin)
 def add_event(request):
@@ -191,17 +197,16 @@ def edit_review(request, book_id):
             return redirect('edit_review', book_id=book.id)
 
         if is_banned(request):
-            messages.success(request, "Your review was updated!")  # 😈 Fake it.
+            messages.success(request, "Your review was updated!")  
             return redirect('books_home')
 
-        # If not banned and valid — actually update
         review.rating = int(request.POST['rating'])
         review.review = request.POST['review']
         review.save()
         messages.success(request, "Your review has been updated.")
         return redirect('book', book_id=book.id)
 
-    # If GET request or form not submitted yet
+    
     return render(request, 'edit_review.html', {
         'book': book,
         'review': review
