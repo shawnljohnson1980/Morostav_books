@@ -5,7 +5,6 @@ from .views import dashboard
 
 urlpatterns = [
     path('', views.index, name="home"),
-    path('dashboard', dashboard, name='dashboard'),
     path('books/<int:book_id>/', views.book, name='book'),
     path('gallery',views.gallery, name="gallery"),
     path('reviews', views.add_review, name="reviews"),

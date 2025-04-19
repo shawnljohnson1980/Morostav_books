@@ -4,7 +4,7 @@ from django.conf import settings
 from django_starfield import Stars
 from datetime import datetime
 from django.db.models import Avg
-from user_login_app.models import User
+from user_login_app.models import User,BlockedIP
 from django.contrib import admin
 
 # 🚀 Genre Model
@@ -47,15 +47,27 @@ class RatingManager(models.Manager):
 
 
 # ⭐ Rating Model (Users Leave Reviews on Books)
+
+
 class Rating(models.Model):
-    book = models.ForeignKey(Book, related_name="ratings", on_delete=models.CASCADE)  # ✅ Fix: `related_name="ratings"`
+    book = models.ForeignKey(Book, related_name="ratings", on_delete=models.CASCADE)
     rating = models.IntegerField()
     review = models.TextField()
     creator = models.ForeignKey(User, related_name='user_ratings', on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
-    objects = RatingManager()
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+
+        # Optional spam check — defensive
+        if "buy followers" in self.review.lower():
+            request = kwargs.get('request')
+            if request:
+                ip = request.META.get('REMOTE_ADDR')
+                if ip and not BlockedIP.objects.filter(ip_address=ip).exists():
+                    BlockedIP.objects.create(ip_address=ip)
+                    print(f"🔥 IP {ip} blocked for spam.")
 
     def __str__(self):
         return f"{self.creator.username} - {self.rating}⭐"
@@ -70,6 +82,7 @@ class RatingForm(forms.ModelForm):
             'rating': forms.RadioSelect(choices=[(i, f"{i}⭐") for i in range(1, 6)], attrs={"class": "star-rating"}),
             'review': forms.Textarea(attrs={"class": "review-box", "rows": 4, "placeholder": "Write your review..."}),
         }
+
 
 class ReviewReply(models.Model):
     rating = models.OneToOneField(Rating, related_name='reply', on_delete=models.CASCADE)
@@ -104,3 +117,4 @@ class Event(models.Model):
 class EventAdmin(admin.ModelAdmin):
     list_display = ("title", "start_time", "end_time", "created_by")
     list_filter = ("start_time", "created_by")
+

@@ -4,7 +4,7 @@ from user_login_app import views
 
 urlpatterns = [
     path('morostav/dashboard/', views.dashboard, name='dashboard'),  # Admin Dashboard
-
+    path('ban-ip/', views.ban_ip, name='ban_ip'),
     # 🔹 LOGIN, LOGOUT & REGISTRATION ROUTES
     path('log_in/', views.log_in, name='log_in'),         # ✅ Form Submission Route
     path('logout/', views.log_out, name='logout'),        # ✅ Fixed Slash Consistency

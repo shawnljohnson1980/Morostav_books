@@ -1,5 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
+from django.http import HttpRequest
+
 
 class UserManager(BaseUserManager):
     def create_user(self, email, username, first_name, last_name, password=None):
@@ -45,3 +47,13 @@ class User(AbstractBaseUser, PermissionsMixin):
     def __str__(self):
         return self.username  # <-- You had `return self.email`, but now it's username-based
 
+class BlockedIP(models.Model):
+    ip_address = models.GenericIPAddressField(unique=True)
+    blocked_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Blocked: {self.ip_address}"
+    
+def is_banned(request):
+    ip = request.META.get('REMOTE_ADDR')
+    return BlockedIP.objects.filter(ip_address=ip).exists()

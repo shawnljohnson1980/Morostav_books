@@ -11,6 +11,15 @@
     <link rel="icon" type="image/x-icon" href="{% static 'img/favicon.webp' %}">
 </head>
 <body>
+    from django.http import HttpResponseForbidden
+
+    @login_required
+    @user_passes_test(is_admin)
+    def dashboard(request):
+        if not request.user.is_staff:
+            return HttpResponseForbidden("You do not have permission to access this page.")
+        return render(request, 'dashboard.html')
+    
         <div class="video-background">
             <video autoplay muted loop id="bg-video">
             <source src="{% static 'videos/enchanted_library.mp4' %}" style="no-repeat center center/cover" type="video/mp4">
@@ -54,11 +63,11 @@
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'add_book' %}">Add Book</a>
                     </li>
-                    li class="nav-item">
-                        <a class="nav-link" href="{% url 'admin_dashboard' %}">Admin Dashboard</a>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'dashboard' %}">Admin Dashboard</a>
                     </li>
                     {% endif %}
-                {% else %}
+                    {% else %}
                     {% if request.resolver_match.url_name != 'log_in' %}
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'to_login' %}">Login</a>
@@ -129,13 +138,21 @@
             <h3>Recent Reviews</h3>
             <div class="row" id="reviewList">
                 {% for rating in ratings %}
+                
                     <div class="col-md-4 review-item" data-rating="{{ rating.rating }}">
                         <div class="card p-3 shadow">
                             <div class="card-body">
                                 <h5 class="card-title">{{ rating.creator.username }}</h5>
                                 <p class="card-text">Rated: {{ rating.rating }}/5</p>
                                 <p class="text-muted">"{{ rating.review }}"</p>
-                                
+                                {% if request.user.is_staff %}
+                                <button class="btn btn-sm btn-danger ban-btn btn-rounded sparkle"
+                                     data-ip="{{ rating.creator.last_login_ip }}"
+                                     data-username="{{ rating.creator.username }}"
+                                  onclick="confirmBan(this)">
+                                  Ban IP
+                                 </button>
+                                 {% endif %}
                                 {% if rating.reply %}
                                 <div class="mt-3 p-2 bg-dark text-white rounded">
                                     <strong>Reply:</strong>
@@ -158,7 +175,81 @@
                         {% endfor %}
             </div>
         </div>
+        
+        <div class="modal fade" id="banConfirmModal" tabindex="-1" role="dialog" aria-labelledby="banConfirmModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+              <div class="modal-content text-dark">
+                <div class="modal-header">
+                  <h5 class="modal-title" id="banConfirmModalLabel">Confirm Banishment</h5>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                  Are you sure you want to ban <strong id="banTargetUser"></strong> with IP <code id="banTargetIP"></code>?
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                  <button type="button" class="btn btn-danger" id="confirmBanBtn">Yes, Ban</button>
+                </div>
+              </div>
+            </div>
+          </div>
+          
     </div>
+    <div class="container mt-5">
+        <h2 class="text-center mb-4">⚔️ Blocked IP List</h2>
+        <table class="table table-dark table-hover shadow rounded">
+            <thead class="table-light">
+                <tr>
+                    <th scope="col">IP Address</th>
+                    <th scope="col">Date Banned</th>
+                    <th scope="col">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for ip in blocked_ips %}
+                <tr>
+                    <td>{{ ip.ip_address }}</td>
+                    <td>{{ ip.created_at|date:"Y-m-d H:i" }}</td>
+                    <td>
+                        <button class="btn btn-warning btn-sm unban-btn" data-ip="{{ ip.ip_address }}">
+                            Undo Ban
+                        </button>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="3" class="text-center">No bans yet. The realm is calm... for now.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <script>
+    document.querySelectorAll('.unban-btn').forEach(button => {
+        button.addEventListener("click", function () {
+            const ip = this.dataset.ip;
+            if (confirm(`Unban IP: ${ip}?`)) {
+                fetch("/unban_ip/", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "X-CSRFToken": "{{ csrf_token }}"
+                    },
+                    body: JSON.stringify({ ip_address: ip })
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        alert("Unbanned successfully.");
+                        location.reload();
+                    } else {
+                        alert("Failed to unban: " + (data.error || "Unknown error"));
+                    }
+                });
+            }
+        });
+    });
+    </script>
     <script>
         function toggleGenreInput() {
             let genreSelect = document.getElementById("genreSelect");

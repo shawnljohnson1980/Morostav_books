@@ -8,6 +8,15 @@ from django.utils.html import strip_tags
 from django.core.mail import EmailMultiAlternatives
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.apps import apps
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+import json
+from .models import BlockedIP
+
+
+
+
+ # Optional: Where users go after logout
 
 User = get_user_model()
 
@@ -43,8 +52,7 @@ def user_create(request):
     )
     log_in(request, user)
     messages.info(request, f"Account for {username} created successfully!")
-    return redirect('home/')
-
+    return redirect('home')
 
 def to_login(request):
     return render(request,"login.html")
@@ -69,7 +77,7 @@ def log_in(request):
             if authenticated_user:
                 login(request, authenticated_user)
                 messages.success(request, "Login successful!")
-                return redirect("books_home")  # Redirect to homepage after login
+                return redirect("home")  # Redirect to homepage after login
             else:
                 messages.error(request, "Incorrect password. Please try again.")
         else:
@@ -96,7 +104,7 @@ def log_out(request):
     messages.info(request, "You have been logged out.")
     if request.session:
         request.session.flush()
-    return redirect('/books_home')
+    return redirect('home')
 
 def password_reset_done(request):
     user = request.user  
@@ -114,3 +122,47 @@ def register(request):
 
 def reset_start(request):
     return render(request, "reset_start.html")
+
+@user_passes_test(lambda u: u.is_staff)
+def ban_ip(request):
+    if request.method == 'POST':
+        ip = request.POST.get('ip')
+        if ip:
+            BlockedIP.objects.get_or_create(ip_address=ip)
+            return JsonResponse({'success': True, 'message': f'{ip} has been blocked.'})
+    return JsonResponse({'success': False, 'message': 'Invalid IP.'}, status=400)
+def banned_ip_list(request):
+    if not request.user.is_staff:
+        return JsonResponse({"error": "Forbidden"}, status=403)
+    
+    blocked_ips = BlockedIP.objects.all()
+    return render(request, "morostav_site/banned_ips.html", {"blocked_ips": blocked_ips})
+
+
+@csrf_exempt
+def unban_ip(request):
+    if request.method == "POST" and request.user.is_staff:
+        data = json.loads(request.body)
+        ip = data.get("ip_address")
+        try:
+            BlockedIP.objects.filter(ip_address=ip).delete()
+            return JsonResponse({"success": True})
+        except Exception as e:
+            return JsonResponse({"success": False, "error": str(e)})
+    return JsonResponse({"success": False, "error": "Invalid request"})
+
+@login_required()
+@user_passes_test(is_admin)
+def dashboard(request):
+    ratings = Rating.objects.select_related('creator').order_by('-created_at')[:10]
+    genres = Genre.objects.all()
+    blocked_ips = BlockedIP.objects.all()  # ← add this line
+
+    return render(request, 'dashboard.html', {
+        'ratings': ratings,
+        'genres': genres,
+        'blocked_ips': blocked_ips,  # ← and pass it here
+        'allow_replies': True,
+    })
+
+

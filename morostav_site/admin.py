@@ -36,3 +36,23 @@ class RatingAdmin(admin.ModelAdmin):
     list_display = ('creator', 'book', 'rating', 'created_at')
     list_filter = ('rating',)  # Filter reviews by star rating
     search_fields = ('creator__username', 'book__title')
+
+from django.http import JsonResponse, HttpResponseBadRequest
+from .models import BlockedIP
+from django.views.decorators.csrf import csrf_exempt
+import json
+
+@csrf_exempt
+def ban_ip(request):
+    if request.method == 'POST' and request.user.is_staff:
+        try:
+            data = json.loads(request.body)
+            ip = data.get('ip')
+            if not ip:
+                return JsonResponse({'error': 'IP address is required'}, status=400)
+            
+            BlockedIP.objects.get_or_create(ip_address=ip)
+            return JsonResponse({'message': f'IP {ip} banned successfully'})
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=500)
+    return HttpResponseBadRequest("Invalid request")

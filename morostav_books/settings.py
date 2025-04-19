@@ -14,11 +14,13 @@ from pathlib import Path
 import os
 import environ
 import caldav
-from dotenv import load_dotenv
+from django.urls import reverse_lazy
+from django.utils.translation import gettext_lazy as _
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-load_dotenv(dotenv_path=os.path.join(BASE_DIR, '.env.dev'))
+env = environ.Env()
+env.read_env(os.path.join(BASE_DIR, '.env.dev'))
 
 
 
@@ -29,18 +31,21 @@ env.read_env(os.path.join(BASE_DIR, '.env'))
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
-SECRET_KEY = 'django-insecure-ih57jo=9w(p#a+5gi@e+_8&d7*ro%at)28isqeb33^=*#bb*71'
+SECRET_KEY = env("SECRET_KEY", default="fallback-dev-key")
+
+LOGIN_REDIRECT_URL = '/'
 
 DEBUG = env.bool('DEBUG', default= False)
-ALLOWED_HOSTS = [
-    'morostavbooks.com',
-    'www.morostavbooks.com',
-    'localhost',
-    '127.0.0.1',
-    '[::1]',
-]
-command: ["./wait-for-it.sh", "mariadb:3306", "--", "gunicorn", "morostav_books.wsgi:application", "--bind", "0.0.0.0:8000"]
+ALLOWED_HOSTS = env.list("DJANGO_ALLOWED_HOSTS", default=[])
+# settings.py
+handler403 = 'your_app.views.custom_permission_denied'
+from django.shortcuts import render
 
+def custom_permission_denied(request, exception=None):
+    return render(request, "403.html", status=403)
+
+LOGIN_REDIRECT_URL = reverse_lazy('home')
+LOGOUT_REDIRECT_URL = reverse_lazy('home') 
 
 AUTH_USER_MODEL ='user_login_app.User'
 
@@ -57,6 +62,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    'user_login_app.middleware.block_ip.BlockIPMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -64,7 +70,15 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-]
+]  
+
+
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+    }
+}
+
 
 ROOT_URLCONF = 'morostav_books.urls'
 

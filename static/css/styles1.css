@@ -287,3 +287,29 @@ body {
   color: var(--gold-highlight);
   text-shadow: 0 0 5px rgba(255, 255, 255, 0.3);
 }
+.btn-ban-ip {
+  background: rgba(176, 0, 32, 0.7);
+  color: white;
+  border: 2px solid rgba(220, 53, 69, 0.8);
+  border-radius: 8px;
+  font-weight: bold;
+  font-family: 'Merriweather', serif;
+  padding: 6px 14px;
+  box-shadow: 0 0 10px rgba(255, 0, 60, 0.5);
+  transition: all 0.3s ease-in-out;
+}
+
+.btn-ban-ip:hover {
+  background: rgba(255, 0, 60, 0.9);
+  box-shadow: 0 0 20px rgba(255, 0, 60, 0.8), 0 0 5px #fff;
+  transform: scale(1.05) rotate(-1deg);
+  color: var(--text-light);
+}
+.btn-ban-ip:active {
+  animation: vanish 0.5s ease forwards;
+}
+
+@keyframes vanish {
+  0% { transform: scale(1); opacity: 1; }
+  100% { transform: scale(1.4) rotate(10deg); opacity: 0; }
+}

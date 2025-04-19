@@ -13,10 +13,11 @@ from .models import Book, Rating, User, GalleryImage, Genre, Event,ReviewReply
 from django.views.decorators.http import require_POST
 from django.conf.urls.static import static
 from time import time
+from .models import BlockedIP
+
 
 def timestamp_context(request):
     return {'timestamp': int(time())}
-
 
 def is_admin(user):
     return user.is_authenticated and user.is_staff
@@ -60,6 +61,7 @@ def add_event(request):
         )
         return JsonResponse({"success": True, "event_id": event.id})
     return JsonResponse({"success": False, "error": "Invalid request"}, status=400)
+
 @login_required
 @user_passes_test(is_admin)
 def contact_view(request):
@@ -150,6 +152,8 @@ def book(request, book_id):
         'latest_reviews': latest_reviews,
         'total_reviews': total_reviews,
     })
+
+@login_required
 def add_review(request, book_id):
     """Allows users to leave ONE review & rating per book."""
     book = get_object_or_404(Book, id=book_id)
@@ -169,8 +173,40 @@ def add_review(request, book_id):
         review=request.POST['review'],
         creator=request.user
     )
-    messages.success(request, "Review added successfully!")
-    return redirect('book', book_id=book.id)
+@login_required
+def edit_review(request, book_id):
+    """Allows a user to edit their existing review for a book."""
+    book = get_object_or_404(Book, id=book_id)
+    review = Rating.objects.filter(book=book, creator=request.user).first()
+
+    if not review:
+        messages.error(request, "You haven't reviewed this book yet.")
+        return redirect('book', book_id=book.id)
+
+    if request.method == "POST":
+        errors = Rating.objects.validator(request.POST)
+        if errors:
+            for message in errors.values():
+                messages.error(request, message)
+            return redirect('edit_review', book_id=book.id)
+
+        if is_banned(request):
+            messages.success(request, "Your review was updated!")  # 😈 Fake it.
+            return redirect('books_home')
+
+        # If not banned and valid — actually update
+        review.rating = int(request.POST['rating'])
+        review.review = request.POST['review']
+        review.save()
+        messages.success(request, "Your review has been updated.")
+        return redirect('book', book_id=book.id)
+
+    # If GET request or form not submitted yet
+    return render(request, 'edit_review.html', {
+        'book': book,
+        'review': review
+    })
+
 @login_required
 def edit_review(request, book_id):
     """Allows a user to edit their existing review for a book."""
@@ -185,6 +221,9 @@ def edit_review(request, book_id):
             for message in errors.values():
                 messages.error(request, message)
             return redirect('edit_review', book_id=book.id)
+        if is_banned(request):
+         messages.success(request, "Your review was updated!")  # 😈
+         return redirect('books_home')
         review.rating = int(request.POST['rating'])
         review.review = request.POST['review']
         review.save()
@@ -194,6 +233,8 @@ def edit_review(request, book_id):
         'book': book,
         'review': review
     })
+    
+
 @login_required
 @user_passes_test(lambda u: u.is_staff)
 def reply_to_review(request, review_id):
@@ -224,7 +265,9 @@ def books_home(request):
     for book in books:
         book.latest_reviews = book.ratings.all().order_by('-created_at')[:3]
     return render(request, 'books.html', {'books': books})
+
 # Add Book (Admin Only)
+
 @login_required
 @user_passes_test(is_admin)
 def add_book(request):
@@ -260,3 +303,6 @@ def calendar_view(request):
 
 def new_review(request):
     return render(request,'add_review.html')
+
+
+
