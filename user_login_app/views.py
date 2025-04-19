@@ -25,7 +25,7 @@ def is_admin(user):
 @login_required()
 @user_passes_test(is_admin)
 def dashboard(request):
-    return render(request, 'morostav_site/dashboard.html')
+    return render(request, "dashboard")
 
 def admin_required(user):
     return bool(user and user.is_authenticated and user.is_staff)
@@ -36,7 +36,7 @@ def user_create(request):
     if errors:
         for k, v in errors.items():
             messages.error(request, v, extra_tags=k)
-            return redirect('/register')
+            return redirect('register')
     else:
         first_name = request.POST['first_name']
         last_name = request.POST['last_name']

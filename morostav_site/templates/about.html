@@ -65,6 +65,11 @@
               <a class="nav-link" href="{% url 'to_login' %}">Login</a>
             </li>
           {% endif %}
+          {% if request.user.is_authenticated %}
+            <li class="nav-item">
+             <a class="nav-link text-warning" href="{% url 'logout' %}">Logout</a>
+            </li>
+         {% endif %}
         {% endif %}
       </ul>
     </div>
