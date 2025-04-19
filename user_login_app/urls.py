@@ -8,7 +8,7 @@ urlpatterns = [
     # 🔹 LOGIN, LOGOUT & REGISTRATION ROUTES
     path('log_in/', views.log_in, name='log_in'),         # ✅ Form Submission Route
     path('logout/', views.log_out, name='logout'),        # ✅ Fixed Slash Consistency
-    path('register/', views.register, name='register'),
+    path('register/', views.user, name='register'),
     path('new_user/', views.user_create, name='new_user'),
 
     # 🔹 PASSWORD RESET ROUTES

@@ -30,7 +30,7 @@
     <div class="form-container">
         <div class="container mt-5">
             <h1 class="shadow"></h1>
-            <form class="border-dark shadow p-3 form-container" action="/user/register" method="POST">
+            <form class="border-dark shadow p-3 form-container" action="{% url 'new_user' %}" method="POST">
                 {% for message in messages %}
                 <p>{{ message }}</p>
                 {% endfor %}
