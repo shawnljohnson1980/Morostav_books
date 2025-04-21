@@ -134,13 +134,13 @@ def ban_ip(request):
             BlockedIP.objects.get_or_create(ip_address=ip)
             return JsonResponse({'success': True, 'message': f'{ip} has been blocked.'})
     return JsonResponse({'success': False, 'message': 'Invalid IP.'}, status=400)
+
 def banned_ip_list(request):
     if not request.user.is_staff:
         return JsonResponse({"error": "Forbidden"}, status=403)
     
     blocked_ips = BlockedIP.objects.all()
     return render(request, "morostav_site/banned_ips.html", {"blocked_ips": blocked_ips})
-
 
 @csrf_exempt
 def unban_ip(request):
