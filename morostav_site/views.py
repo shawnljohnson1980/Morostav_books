@@ -104,6 +104,30 @@ def contact(request):
 @login_required
 @user_passes_test(is_admin)
 def dashboard(request):
+    if request.method == "POST":
+        title = request.POST.get("title")
+        description = request.POST.get("description")
+        isbn = request.POST.get("isbn")
+        cover_image = request.FILES.get("cover_image")
+        genre_id = request.POST.get("genre")
+        new_genre_name = request.POST.get("new_genre", "").strip()
+
+        genre = None
+        if new_genre_name:
+            genre, _ = Genre.objects.get_or_create(name=new_genre_name)
+        elif genre_id:
+            genre = Genre.objects.get(id=genre_id)
+
+        Book.objects.create(
+            title=title,
+            description=description,
+            isbn=isbn,
+            cover_image=cover_image,
+            genre=genre,
+        )
+        messages.success(request, "Book added successfully!")
+        return redirect("dashboard")
+
     context = {
         "total_books": Book.objects.count(),
         "total_reviews": Rating.objects.count(),
@@ -111,6 +135,11 @@ def dashboard(request):
         "total_users": User.objects.count(),
         "latest_reviews": Rating.objects.select_related('creator', 'book').order_by('-created_at')[:5],
         "allow_replies": True,
+        "books": Book.objects.all(),
+        "users": User.objects.all(),
+        "ratings": Rating.objects.select_related('creator', 'reply__responder'),
+        "genres": Genre.objects.all(),
+        "blocked_ips": BlockedIP.objects.all(),
     }
     return render(request, "dashboard.html", context)
 
@@ -271,36 +300,6 @@ def books_home(request):
         book.latest_reviews = book.ratings.all().order_by('-created_at')[:3]
     return render(request, 'books.html', {'books': books})
 
-# Add Book (Admin Only)
-
-@login_required
-@user_passes_test(is_admin)
-def add_book(request):
-    if request.method == "POST":
-        title = request.POST["title"]
-        description = request.POST["description"]
-        isbn = request.POST.get("isbn")
-        cover_image = request.FILES.get("cover_image")
-        genre_id = request.POST.get("genre")
-        new_genre_name = request.POST.get("new_genre", "").strip()
-        # Ensure genre is valid
-        genre = None
-        if new_genre_name:
-            genre, _ = Genre.objects.get_or_create(name=new_genre_name)
-        elif genre_id:
-            genre = Genre.objects.get(id=genre_id)
-        # Create book
-        book = Book.objects.create(
-            title=title,
-            description=description,
-            cover_image=cover_image,
-            genre=genre,
-            isbn=isbn,
-        )
-        messages.success(request, "Book added successfully!")
-        return redirect("books_home")
-    return render(request, "add_book.html", {"genres": Genre.objects.all()})
-
 def calendar_view(request):
     """Display all upcoming events for users."""
     events = Event.objects.order_by('start_time')  # Sort by date
@@ -308,6 +307,37 @@ def calendar_view(request):
 
 def new_review(request):
     return render(request,'add_review.html')
+@login_required
+@user_passes_test(is_admin)
+def add_book(request):
+    if request.method == "POST":
+        title = request.POST.get("title")
+        description = request.POST.get("description")
+        isbn = request.POST.get("isbn")
+        cover_image = request.FILES.get("cover_image")
+        genre_id = request.POST.get("genre")
+        new_genre_name = request.POST.get("new_genre", "").strip()
+
+        # Genre logic
+        genre = None
+        if new_genre_name:
+            genre, _ = Genre.objects.get_or_create(name=new_genre_name)
+        elif genre_id:
+            genre = Genre.objects.filter(id=genre_id).first()
+
+        # Book creation
+        Book.objects.create(
+            title=title,
+            description=description,
+            isbn=isbn,
+            cover_image=cover_image,
+            genre=genre
+        )
+
+        messages.success(request, "New book added successfully!")
+        return redirect("dashboard")  # 👈 This is the key change
+
+    return redirect("dashboard")  # Handles GET attempts gracefully to
 
 
 
