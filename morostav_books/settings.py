@@ -115,13 +115,14 @@ def getenv(key, fallback=None, required=False):
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': getenv('DB_NAME', required=True),
-        'USER': getenv('DB_USER', required=True),
-        'PASSWORD': getenv('DB_PASSWORD', required=True),
-        'HOST': getenv('DB_HOST','mariadb'),
-        'PORT': getenv('DB_PORT', '3306'),
+        'NAME': env('DB_NAME'),
+        'USER': env('DB_USER'),
+        'PASSWORD': env('DB_PASSWORD'),
+        'HOST': env('DB_HOST', default='127.0.0.1'),
+        'PORT': env('DB_PORT', default='3306'),
     }
 }
+
 
 
 
