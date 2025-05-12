@@ -18,5 +18,7 @@ urlpatterns = [
     path('new_review', views.new_review, name="new_review"),
     path('contact', views.contact, name='contact'), 
     path('dashboard', views.dashboard, name="dashboard"),
-    path ('add_book', views.add_book, name="add_book")
+    path ('add_book', views.add_book, name="add_book"),
+    path('ajax/add_genre/', views.add_genre_ajax, name='add_genre_ajax'),
+    path('book/<int:book_id>', views.book,name="book"),
 ]

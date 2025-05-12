@@ -1,332 +1,264 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
-    <title>Admin Dashboard</title>
-    {% load static %}
-    <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="{% static 'css/styles1.css' %}?v={{ timestamp }}">
-    <link rel="icon" type="image/x-icon" href="{% static 'img/favicon.webp' %}">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+  <title>Admin Dashboard</title>
+  {% load static %}
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+  <link rel="stylesheet" href="{% static 'css/styles1.css' %}?v={{ timestamp }}">
+  <link rel="icon" type="image/x-icon" href="{% static 'img/favicon.webp' %}">
 </head>
 <body>
-     from django.http import HttpResponseForbidden
 
-    @login_required
-    @user_passes_test(is_admin)
-    def dashboard(request):
-        if not request.user.is_staff:
-            return HttpResponseForbidden("You do not have permission to access this page.")
-        return render(request, 'dashboard.html')
-    
-        <div class="video-background">
-            <video autoplay muted loop id="bg-video">
-            <source src="{% static 'videos/enchanted_library.mp4' %}" style="no-repeat center center/cover" type="video/mp4">
-            Your browser does not support the video tag.
-            </video>
-            <div class="video-overlay-content">
+  <div class="video-background">
+    <video autoplay muted loop id="bg-video">
+      <source src="{% static 'videos/enchanted_library.mp4' %}" type="video/mp4">
+      Your browser does not support the video tag.
+    </video>
+    <div class="video-overlay-content">
+      <h1>Welcome to Morostav Books</h1>
+      <p>Your next adventure starts here.</p>
+    </div>
+  </div>
 
-            <!-- Optional: Site title, buttons, nav, etc. -->
-            </div>
-        </div>      
-        <nav class="navbar navbar-dark bg-dark navbar-expand-md shadow-lg">
-            <div class="container-fluid">
-            <a class="navbar-brand text-white" href="{% url 'home' %}">Welcome to Morostav Books</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navcol-1">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navcol-1">
-                <ul class="navbar-nav ms-auto">
-                {% if request.resolver_match.url_name != 'books_home' %}
-                    <li class="nav-item">
-                    <a class="nav-link" href="{% url 'books_home' %}">Books</a>
-                    </li>
-                {% endif %}
-                {% if request.resolver_match.url_name != 'about' %}
-                    <li class="nav-item">
-                    <a class="nav-link" href="{% url 'about' %}">About Me</a>
-                    </li>
-                {% endif %}
-                <li class="nav-item">
-                    <a class="nav-link" href="{% url 'calendar' %}">Calendar</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="{% url 'contact' %}">Contact</a>
-                </li>
-                {% if request.user.is_authenticated %}
-                    <li class="nav-item">
-                    <a class="nav-link" href="{% url 'logout' %}">Logout</a>
-                    </li>
-                    {% if request.user.is_staff %}
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'add_book' %}">Add Book</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'dashboard' %}">Admin Dashboard</a>
-                    </li>
-                    {% endif %}
-                    {% else %}
-                    {% if request.resolver_match.url_name != 'log_in' %}
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'to_login' %}">Login</a>
-                    </li>
-                    {% endif %}
-                    {% if request.user.is_authenticated %}
-                    <li class="nav-item">
-                      <a class="nav-link text-warning" href="{% url 'logout' %}">Logout</a>
-                    </li>
-                  {% endif %}
-                {% endif %}
-                </ul>
-            </div>
-        </div>
-        </nav> 
-    <div class="container mt-4">
-        <h2 class="text-center">Manage Books & Reviews</h2>
-        <!-- Book Addition Form -->
-        <div class="card p-3 shadow mt-4">
-            <h3>Add a New Book</h3>
-            <form id="bookForm" method="POST" enctype="multipart/form-data" action="{% url 'add_book' %}">
-                {% csrf_token %}
-                <div class="form-group">
-                    <label>Title:</label>
-                    <input type="text" class="form-control" name="title" required>
-                </div>
-                <div class="form-group mt-3">
-                    <label>Description:</label>
-                    <textarea class="form-control" name="description" required></textarea>
-                </div>
-                <div class="form-group mt-3">
-                    <label>ISBN:</label>
-                    <input type="text" class="form-control" name="isbn">
-                </div>
-                <div class="form-group mt-3">
-                    <label>Cover Image:</label>
-                    <input type="file" class="form-control" name="cover_image">
-                </div>
-                <!-- Genre Selection with Auto-Refresh -->
-                <div class="form-group mt-3">
-                    <label>Genre:</label>
-                    <select id="genreSelect" class="form-control" name="genre" onchange="toggleGenreInput()">
-                        <option value="">--Select--</option>
-                        {% for genre in genres %}
-                        <option value="{{ genre.id }}">{{ genre.name }}</option>
-                        {% endfor %}
-                        <option value="add">Add new</option>
-                    </select>
-                </div>
-                <!-- Hidden New Genre Input -->
-                <div class="form-group mt-3" id="new_genre" style="display: none;">
-                    <label>New Genre:</label>
-                    <input type="text" class="form-control" name="new_genre" id="newGenreInput">
-                    <button type="button" class="btn btn-info mt-2" onclick="addGenre()">Add Genre</button>
-                </div>
-                <button type="submit" class="btn btn-primary mt-4">Add Book</button>
-                {% if messages %}
-                <ul class="messages">
-                 {% for message in messages %}
-                 <li class="alert alert-{{ message.tags }}">{{ message }}</li>
-                  {% endfor %}
-                 </ul>
-                  {% endif %}
-            </form>
-        </div>
-        <!-- Review Filtering -->
-        <div class="card p-3 shadow mt-4">
-            <h3>Filter Reviews by Rating</h3>
-            <select id="reviewFilter" class="form-control" onchange="filterReviews()">
-                <option value="all">All Ratings</option>
-                <option value="5">5 Stars</option>
-                <option value="4">4 Stars</option>
-                <option value="3">3 Stars</option>
-                <option value="2">2 Stars</option>
-                <option value="1">1 Star</option>
+  <nav class="navbar navbar-dark bg-dark navbar-expand-md shadow-lg">
+    <div class="container-fluid">
+      <a class="navbar-brand text-white" href="{% url 'home' %}">Welcome to Morostav Books</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navcol-1">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navcol-1">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item"><a class="nav-link" href="{% url 'books_home' %}">Books</a></li>
+          <li class="nav-item"><a class="nav-link" href="{% url 'about' %}">About Me</a></li>
+          <li class="nav-item"><a class="nav-link" href="{% url 'calendar' %}">Calendar</a></li>
+          <li class="nav-item"><a class="nav-link" href="{% url 'contact' %}">Contact</a></li>
+          {% if request.user.is_authenticated %}
+            <li class="nav-item"><a class="nav-link" href="{% url 'logout' %}">Logout</a></li>
+            {% if request.user.is_staff %}
+              <li class="nav-item"><a class="nav-link" href="{% url 'add_book' %}">Add Book</a></li>
+              <li class="nav-item"><a class="nav-link" href="{% url 'dashboard' %}">Admin Dashboard</a></li>
+            {% endif %}
+          {% else %}
+            <li class="nav-item"><a class="nav-link" href="{% url 'to_login' %}">Login</a></li>
+          {% endif %}
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container mt-4">
+    <h2 class="text-center">Manage Books & Reviews</h2>
+
+    {% if messages %}
+      <ul class="messages">
+        {% for message in messages %}
+          <li class="alert alert-{{ message.tags }}">{{ message }}</li>
+        {% endfor %}
+      </ul>
+    {% endif %}
+
+    <div class="p-3 shadow mt-4">
+        <h3>Add a New Book</h3>
+        <form id="bookForm" method="POST" enctype="multipart/form-data" action="{% url 'dashboard' %}">
+          {% csrf_token %}
+          <div class="form-group mt-2">
+            <label>Title:</label>
+            <input type="text" class="form-control" name="title" required>
+          </div>
+          <div class="form-group mt-3">
+            <label>Description:</label>
+            <textarea class="form-control" name="description" required></textarea>
+          </div>
+          <div class="form-group mt-3">
+            <label>ISBN:</label>
+            <input type="text" class="form-control" name="isbn">
+          </div>
+          <div class="form-group mt-3">
+            <label>Cover Image:</label>
+            <input type="file" class="form-control" name="cover_image">
+          </div>
+          <div class="form-group mt-3">
+            <label>Genre:</label>
+            <select id="genreSelect" class="form-control" name="genre" onchange="toggleGenreInput()">
+              <option value="">--Select--</option>
+              {% for genre in genres %}
+              <option value="{{ genre.id }}">{{ genre.name }}</option>
+              {% endfor %}
+              <option value="add">Add new</option>
             </select>
+          </div>
+          <div class="form-group mt-3" id="new_genre" style="display: none;">
+            <label>New Genre:</label>
+            <input type="text" class="form-control" name="new_genre" id="newGenreInput">
+            <button type="button" class="btn btn-info mt-2" onclick="addGenre()">Add Genre</button>
+          </div>
+          <button type="submit" class="btn btn-primary mt-4">Add Book</button>
+          {% if messages %}
+          <ul class="messages mt-3">
+            {% for message in messages %}
+            <li class="alert alert-{{ message.tags }}">{{ message }}</li>
+            {% endfor %}
+          </ul>
+          {% endif %}
+        </form>
+      </div>
+        <div class="form-group mt-3" id="new_genre" style="display: none;">
+          <label>New Genre:</label>
+          <input type="text" class="form-control" name="new_genre" id="newGenreInput">
+          <button type="button" class="btn btn-info mt-2" onclick="addGenre()">Add Genre</button>
         </div>
-        <!-- Reviews -->
-        <div class="reviews mt-5">
-            <h3>Recent Reviews</h3>
-            <div class="row" id="reviewList">
-                {% for rating in ratings %}
-                    <div class="col-md-4 review-item" data-rating="{{ rating.rating }}">
-                        <div class="card p-3 shadow">
-                            <div class="card-body">
-                                <h5 class="card-title">{{ rating.creator.username }}</h5>
-                                <p class="card-text">Rated: {{ rating.rating }}/5</p>
-                                <p class="text-muted">"{{ rating.review }}"</p>
-        
-                                {% if request.user.is_staff and rating.creator.last_login_ip %}
-                                    <button class="btn btn-sm btn-danger ban-btn btn-rounded sparkle"
-                                        data-ip="{{ rating.creator.last_login_ip }}"
-                                        data-username="{{ rating.creator.username }}"
-                                        onclick="confirmBan(this)">
-                                        Ban IP
-                                    </button>
-                                {% endif %}
-        
-                                {% if rating.reply %}
-                             <div class="mt-3 p-2 bg-dark text-white rounded">
-                               <strong>Reply:</strong>
-                               <p>{{ rating.reply.message }}</p>
-                               <small class="text-muted">— {{ rating.reply.responder.username }}</small>
-                             </div>
-                                {% elif allow_replies %}
-                                    <!-- Reply Form -->
-                                    <div>
-                                        <h1 class="shadow"></h1>
-                                        {% csrf_token %}
-                                         <form class="border-dark shadow p-3 form-container" action="reply_to_review" method="POST">
-                                          <textarea>  </textarea>
-                                           <button type="submit" class="btn btn-primary mt-4">Reply</button> 
-                                        </form>
-                                    </div>
-                                {% endif %}
-                                {% if rating.reply %}
-                                    <span class="badge bg-success">Replied</span>
-                                {% endif %}
-                                {% empty %}
-                    <div class="col-12">
-                        <p class="text-center text-muted">No reviews yet. The shelf is quiet…</p>
-                    </div>
-                {% endfor %}
-                            </div>
-                        </div>
-                    </div>
-                {% empty %}
-                    <div class="col-12">
-                        <p class="text-center text-muted">No reviews yet. The shelf is quiet…</p>
-                    </div>
-                {% endfor %}
-            </div>
-        </div>        
-        <div class="modal fade" id="banConfirmModal" tabindex="-1" role="dialog" aria-labelledby="banConfirmModalLabel" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered" role="document">
-              <div class="modal-content text-dark">
-                <div class="modal-header">
-                  <h5 class="modal-title" id="banConfirmModalLabel">Confirm Banishment</h5>
-                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                  Are you sure you want to ban <strong id="banTargetUser"></strong> with IP <code id="banTargetIP"></code>?
-                </div>
-                <div class="modal-footer">
-                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                  <button type="button" class="btn btn-danger" id="confirmBanBtn">Yes, Ban</button>
-                </div>
+        <button type="submit" class="btn btn-primary mt-4">Add Book</button>
+      </form>
+    </div>
+
+    <div class="card p-3 shadow mt-4">
+      <h3>Filter Reviews by Rating</h3>
+      <select id="reviewFilter" class="form-control" onchange="filterReviews()">
+        <option value="all">All Ratings</option>
+        {% for i in "54321" %}
+          <option value="{{ i }}">{{ i }} Star{{ i|pluralize }}</option>
+        {% endfor %}
+      </select>
+    </div>
+
+    <div class="reviews mt-5">
+      <h3>Recent Reviews</h3>
+      <div class="row" id="reviewList">
+        {% for rating in ratings %}
+          <div class="col-md-4 review-item" data-rating="{{ rating.rating }}">
+            <div class="card p-3 shadow">
+              <div class="card-body">
+                <h5 class="card-title">{{ rating.creator.username }}</h5>
+                <p class="card-text">Rated: {{ rating.rating }}/5</p>
+                <p class="text-muted">"{{ rating.review }}"</p>
+
+                {% if request.user.is_staff and rating.creator.last_login_ip %}
+                  <button class="btn btn-sm btn-danger ban-btn sparkle"
+                          data-ip="{{ rating.creator.last_login_ip }}"
+                          data-username="{{ rating.creator.username }}"
+                          onclick="confirmBan(this)">
+                    Ban IP
+                  </button>
+                {% endif %}
+
+                {% if rating.reply %}
+                  <div class="mt-3 p-2 bg-dark text-white rounded">
+                    <strong>Reply:</strong>
+                    <p>{{ rating.reply.message }}</p>
+                    <small class="text-muted">— {{ rating.reply.responder.username }}</small>
+                  </div>
+                {% elif allow_replies %}
+                  <form method="POST" action="{% url 'reply_to_review' rating.id %}" class="mt-2">
+                    {% csrf_token %}
+                    <textarea class="form-control" name="message" rows="2" placeholder="Write a reply..."></textarea>
+                    <button type="submit" class="btn btn-sm btn-primary mt-2">Reply</button>
+                  </form>
+                {% endif %}
               </div>
             </div>
           </div>
-          
+        {% empty %}
+          <div class="col-12 text-center text-muted">No reviews yet. The shelf is quiet…</div>
+        {% endfor %}
+      </div>
     </div>
-    <div class="container mt-5">
-        <h2 class="text-center mb-4">⚔️ Blocked IP List</h2>
-        <table class="table table-dark table-hover shadow rounded">
-            <thead class="table-light">
-                <tr>
-                    <th scope="col">IP Address</th>
-                    <th scope="col">Date Banned</th>
-                    <th scope="col">Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for ip in blocked_ips %}
-                <tr>
-                    <td>{{ ip.ip_address }}</td>
-                    <td>{{ ip.created_at|date:"Y-m-d H:i" }}</td>
-                    <td>
-                        <button class="btn btn-warning btn-sm unban-btn" data-ip="{{ ip.ip_address }}">
-                            Undo Ban
-                        </button>
-                    </td>
-                </tr>
-                {% empty %}
-                <tr>
-                    <td colspan="3" class="text-center">No bans yet. The realm is calm... for now.</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
-    <script>
-    document.querySelectorAll('.unban-btn').forEach(button => {
-        button.addEventListener("click", function () {
-            const ip = this.dataset.ip;
-            if (confirm(`Unban IP: ${ip}?`)) {
-                fetch("/unban_ip/", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                        "X-CSRFToken": "{{ csrf_token }}"
-                    },
-                    body: JSON.stringify({ ip_address: ip })
-                })
-                .then(res => res.json())
-                .then(data => {
-                    if (data.success) {
-                        alert("Unbanned successfully.");
-                        location.reload();
-                    } else {
-                        alert("Failed to unban: " + (data.error || "Unknown error"));
-                    }
-                });
-            }
-        });
-    });
-    </script>
-    <script>
-        function toggleGenreInput() {
-            let genreSelect = document.getElementById("genreSelect");
-            let newGenreField = document.getElementById("new_genre");
-            if (genreSelect.value === "add") {
-                newGenreField.style.display = "block";
-            } else {
-                newGenreField.style.display = "none";
-            }
-        }
-        function addGenre() {
-            let newGenreInput = document.getElementById("newGenreInput").value;
-            if (newGenreInput.trim() !== "") {
-                fetch("{% url 'add_genre_ajax' %}", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                        "X-CSRFToken": "{{ csrf_token }}"
-                    },
-                    body: JSON.stringify({ name: newGenreInput })
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        let genreSelect = document.getElementById("genreSelect");
-                        let newOption = document.createElement("option");
-                        newOption.value = data.genre_id;
-                        newOption.textContent = newGenreInput;
-                        genreSelect.insertBefore(newOption, genreSelect.lastChild);
-                        newGenreField.style.display = "none";
-                        genreSelect.value = data.genre_id;
-                    } else {
-                        alert("Error adding genre");
-                    }
-                });
-            }
-        }
-        function filterReviews() {
-            let selectedRating = document.getElementById("reviewFilter").value;
-            let reviews = document.querySelectorAll(".review-item");
-            reviews.forEach(review => {
-                if (selectedRating === "all" || review.getAttribute("data-rating") === selectedRating) {
-                    review.style.display = "block";
-                } else {
-                    review.style.display = "none";
-                }
-            });
-        }
-    </script>
-    <script src="{% static 'js/main.js' %}"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" 
-    integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" 
-    crossorigin="anonymous"></script>
-</body>
 
+    <div class="container mt-5">
+      <h2 class="text-center mb-4">⚔️ Blocked IP List</h2>
+      <table class="table table-dark table-hover shadow rounded">
+        <thead class="table-light">
+          <tr><th>IP Address</th><th>Date Banned</th><th>Actions</th></tr>
+        </thead>
+        <tbody>
+          {% for ip in blocked_ips %}
+            <tr>
+              <td>{{ ip.ip_address }}</td>
+              <td>{{ ip.created_at|date:"Y-m-d H:i" }}</td>
+              <td><button class="btn btn-warning btn-sm unban-btn" data-ip="{{ ip.ip_address }}">Undo Ban</button></td>
+            </tr>
+          {% empty %}
+            <tr><td colspan="3" class="text-center">No bans yet. The realm is calm...</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <script>
+    function toggleGenreInput() {
+      const genreSelect = document.getElementById("genreSelect");
+      const newGenreField = document.getElementById("new_genre");
+      newGenreField.style.display = genreSelect.value === "add" ? "block" : "none";
+    }
+
+    function addGenre() {
+      const newGenreInput = document.getElementById("newGenreInput").value.trim();
+      if (newGenreInput !== "") {
+        fetch("{% url 'add_genre_ajax' %}", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "X-CSRFToken": "{{ csrf_token }}"
+          },
+          body: JSON.stringify({ name: newGenreInput })
+        })
+        .then(res => res.json())
+        .then(data => {
+          if (data.success) {
+            const genreSelect = document.getElementById("genreSelect");
+            const newOption = document.createElement("option");
+            newOption.value = data.genre_id;
+            newOption.textContent = newGenreInput;
+            genreSelect.insertBefore(newOption, genreSelect.lastChild);
+            document.getElementById("new_genre").style.display = "none";
+            genreSelect.value = data.genre_id;
+          } else {
+            alert("Error adding genre.");
+          }
+        });
+      }
+    }
+
+    function filterReviews() {
+      const selectedRating = document.getElementById("reviewFilter").value;
+      document.querySelectorAll(".review-item").forEach(review => {
+        review.style.display = (selectedRating === "all" || review.dataset.rating === selectedRating) ? "block" : "none";
+      });
+    }
+
+    document.querySelectorAll('.unban-btn').forEach(button => {
+      button.addEventListener("click", function () {
+        const ip = this.dataset.ip;
+        if (confirm(`Unban IP: ${ip}?`)) {
+          fetch("/unban_ip/", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "X-CSRFToken": "{{ csrf_token }}"
+            },
+            body: JSON.stringify({ ip_address: ip })
+          })
+          .then(res => res.json())
+          .then(data => {
+            if (data.success) {
+              alert("Unbanned successfully.");
+              location.reload();
+            } else {
+              alert("Failed to unban: " + (data.error || "Unknown error"));
+            }
+          });
+        }
+      });
+    });
+  </script>
+
+  <script src="{% static 'js/main.js' %}"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-HoA7xV9NlvqxRMhJ+Zm8PVPIzVXbJ8B9cvNA+OEkfGc1h5XhOxS0Th3R7zMaO0+7" crossorigin="anonymous"></script>
+
+</body>
 </html>
+

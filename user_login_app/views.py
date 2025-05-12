@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.contrib.auth import get_user_model, authenticate, login, logout
+from morostav_site.models import Book,Rating,ReviewReply
 from django.core.mail import send_mail
 from django.conf import settings
 from django.template.loader import render_to_string
@@ -22,7 +23,7 @@ def is_admin(user):
 @login_required()
 @user_passes_test(is_admin)
 def dashboard(request):
-    return render(request, "dashboard")
+    return render(request, "dashboard.html")
 
 def admin_required(user):
     return bool(user and user.is_authenticated and user.is_staff)
@@ -154,18 +155,6 @@ def unban_ip(request):
             return JsonResponse({"success": False, "error": str(e)})
     return JsonResponse({"success": False, "error": "Invalid request"})
 
-@login_required()
-@user_passes_test(is_admin)
-def dashboard(request):
-    ratings = Rating.objects.select_related('creator').order_by('-created_at')[:10]
-    genres = Genre.objects.all()
-    blocked_ips = BlockedIP.objects.all()  # ← add this line
 
-    return render(request, 'dashboard.html', {
-        'ratings': ratings,
-        'genres': genres,
-        'blocked_ips': blocked_ips,  # ← and pass it here
-        'allow_replies': True,
-    })
 
 

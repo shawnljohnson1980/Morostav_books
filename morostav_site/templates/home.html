@@ -81,15 +81,23 @@
     <p>Your next adventure starts here.</p>
     <a href="{% url 'books_home' %}" class="btn btn-info">Browse Books</a>
 </div>
-<div class="featured-book">
-    {% if featured_book %}
-        <h2>{{ book.title }}</h2>
-        <p>{{ book.description }}</p>
-        <p>{{ book.review  }}</p>      
-    {% else %}
-        <p>No books available yet.</p>
-    {% endif %}
+<div class="col-md-6 offset-md-1 mt-5">
+  {% if featured_book %}
+    <div class="card shadow">
+      <img src="{{ featured_book.cover_image.url }}" class="card-img-top" alt="{{ featured_book.title }} Cover"
+           style="height: 300px; object-fit: cover; border-top-left-radius: 7px; border-top-right-radius: 7px;">
+      <div class="card-body">
+        <h5 class="card-title">{{ featured_book.title }}</h5>
+        <p class="card-text">{{ featured_book.description }}</p>
+        <p class="text-muted">⭐ Average Rating: {{ featured_book.avg_rating|default:"No ratings yet" }}/5</p>
+        <a href="{% url 'book' featured_book.id %}" class="btn btn-primary">View Book</a>
+      </div>
+    </div>
+  {% else %}
+    <p>No books available yet.</p>
+  {% endif %}
 </div>
+
 <div class="reviews">
     <h2>Recent Reviews</h2>
     <div class="row"> 

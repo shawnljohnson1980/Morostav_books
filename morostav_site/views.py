@@ -103,7 +103,7 @@ def contact(request):
 
 @login_required
 @user_passes_test(is_admin)
-def dashboard(request):
+def dashboard(request,context):
     if request.method == "POST":
         title = request.POST.get("title")
         description = request.POST.get("description")
@@ -258,6 +258,7 @@ def reply_to_review(request, review_id):
 # About Page
 def about(request):
     return render(request, "about.html")
+
 # Books Homepage (List of Books)
 def books_home(request):
     books = Book.objects.annotate(avg_rating=Avg('ratings__rating'))  # ✅ Using 'ratings__rating' now

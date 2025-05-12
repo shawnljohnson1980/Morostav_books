@@ -1,7 +1,7 @@
 from django.urls import path
 from django.contrib.auth import views as auth_views
 from user_login_app import views
-
+from morostav_site.urls import dashboard
 urlpatterns = [
     path('morostav/dashboard/', views.dashboard, name='dashboard'),  # Admin Dashboard
     path('ban-ip/', views.ban_ip, name='ban_ip'),
