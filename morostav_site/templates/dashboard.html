@@ -149,44 +149,57 @@
             <h3>Recent Reviews</h3>
             <div class="row" id="reviewList">
                 {% for rating in ratings %}
-                
                     <div class="col-md-4 review-item" data-rating="{{ rating.rating }}">
                         <div class="card p-3 shadow">
                             <div class="card-body">
                                 <h5 class="card-title">{{ rating.creator.username }}</h5>
                                 <p class="card-text">Rated: {{ rating.rating }}/5</p>
                                 <p class="text-muted">"{{ rating.review }}"</p>
-                                {% if request.user.is_staff %}
-                                <button class="btn btn-sm btn-danger ban-btn btn-rounded sparkle"
-                                     data-ip="{{ rating.creator.last_login_ip }}"
-                                     data-username="{{ rating.creator.username }}"
-                                  onclick="confirmBan(this)">
-                                  Ban IP
-                                 </button>
-                                 {% endif %}
-                                {% if rating.reply %}
-                                <div class="mt-3 p-2 bg-dark text-white rounded">
-                                    <strong>Reply:</strong>
-                                    <p>{{ rating.reply.message }}</p>
-                                    <small class="text-muted">— {{ rating.reply.responder.username }}</small>
-                                </div>
-                            {% elif allow_replies %}
-                                <!-- Reply Form -->
-                                <form method="POST" action="{% url 'reply_to_review' rating.id %}">
-                                    {% csrf_token %}
-                                    <textarea class="form-control mt-2" name="message" placeholder="Write a reply..."></textarea>
-                                    <button type="submit" class="btn btn-sm btn-indigo mt-2">Reply</button>
-                                </form>
-                            {% endif %}
-                            {% if rating.reply %}
-                                <span class="badge bg-success">Replied</span>
-                            {% endif %}
-                        {% empty %}
-                    <p>No reviews yet. Be the first to review!</p>
-                        {% endfor %}
-            </div>
-        </div>
         
+                                {% if request.user.is_staff and rating.creator.last_login_ip %}
+                                    <button class="btn btn-sm btn-danger ban-btn btn-rounded sparkle"
+                                        data-ip="{{ rating.creator.last_login_ip }}"
+                                        data-username="{{ rating.creator.username }}"
+                                        onclick="confirmBan(this)">
+                                        Ban IP
+                                    </button>
+                                {% endif %}
+        
+                                {% if rating.reply %}
+                             <div class="mt-3 p-2 bg-dark text-white rounded">
+                               <strong>Reply:</strong>
+                               <p>{{ rating.reply.message }}</p>
+                               <small class="text-muted">— {{ rating.reply.responder.username }}</small>
+                             </div>
+                                {% elif allow_replies %}
+                                    <!-- Reply Form -->
+                                    <div>
+                                        <h1 class="shadow"></h1>
+                                        {% csrf_token %}
+                                         <form class="border-dark shadow p-3 form-container" action="reply_to_review" method="POST">
+                                          <textarea>  </textarea>
+                                           <button type="submit" class="btn btn-primary mt-4">Reply</button> 
+                                        </form>
+                                    </div>
+                                {% endif %}
+                                {% if rating.reply %}
+                                    <span class="badge bg-success">Replied</span>
+                                {% endif %}
+                                {% empty %}
+                    <div class="col-12">
+                        <p class="text-center text-muted">No reviews yet. The shelf is quiet…</p>
+                    </div>
+                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                {% empty %}
+                    <div class="col-12">
+                        <p class="text-center text-muted">No reviews yet. The shelf is quiet…</p>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>        
         <div class="modal fade" id="banConfirmModal" tabindex="-1" role="dialog" aria-labelledby="banConfirmModalLabel" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered" role="document">
               <div class="modal-content text-dark">

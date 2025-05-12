@@ -72,7 +72,6 @@ class Rating(models.Model):
     def __str__(self):
         return f"{self.creator.username} - {self.rating}⭐"
 
-
 # ✨ Form for submitting book ratings
 class RatingForm(forms.ModelForm):
     class Meta:
