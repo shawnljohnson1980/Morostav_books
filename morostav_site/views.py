@@ -125,9 +125,6 @@ def dashboard(request):
         )
         messages.success(request, "Book added successfully!")
         return redirect("dashboard")
-
-    ratings = Rating.objects.select_related('creator', 'reply__responder').order_by('-created_at')[:10]
-
     context = {
         "total_books": Book.objects.count(),
         "total_reviews": Rating.objects.count(),
@@ -141,7 +138,6 @@ def dashboard(request):
         "blocked_ips": BlockedIP.objects.all(),
         "allow_replies": True,
     }
-
     return render(request, "dashboard.html", context)
 
 @login_required
