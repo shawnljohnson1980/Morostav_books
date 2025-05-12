@@ -11,7 +11,7 @@
     <link rel="icon" type="image/x-icon" href="{% static 'img/favicon.webp' %}">
 </head>
 <body>
-    from django.http import HttpResponseForbidden
+     from django.http import HttpResponseForbidden
 
     @login_required
     @user_passes_test(is_admin)
@@ -26,9 +26,8 @@
             Your browser does not support the video tag.
             </video>
             <div class="video-overlay-content">
+
             <!-- Optional: Site title, buttons, nav, etc. -->
-            <h1>Welcome to Morostav Books</h1>
-            <p>Your next adventure starts here.</p>
             </div>
         </div>      
         <nav class="navbar navbar-dark bg-dark navbar-expand-md shadow-lg">
@@ -88,7 +87,7 @@
         <!-- Book Addition Form -->
         <div class="card p-3 shadow mt-4">
             <h3>Add a New Book</h3>
-            <form id="bookForm" method="POST" enctype="multipart/form-data" action="{% url 'dashboard' %}">
+            <form id="bookForm" method="POST" enctype="multipart/form-data" action="{% url 'add_book' %}">
                 {% csrf_token %}
                 <div class="form-group">
                     <label>Title:</label>
