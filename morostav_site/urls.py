@@ -15,10 +15,11 @@ urlpatterns = [
     path('calendar/add_event/', views.add_event, name='add_event'),
     path('books/<int:book_id>/review/edit/', views.edit_review, name='edit_review'),
     path('reviews/<int:review_id>/reply/', views.reply_to_review, name='reply_to_review'),
-    path('new_review', views.new_review, name="new_review"),
+    path('books/<int:book_id>/review/new/', views.new_review, name='new_review'),
     path('contact', views.contact, name='contact'), 
     path('dashboard', views.dashboard, name="dashboard"),
     path ('add_book', views.add_book, name="add_book"),
     path('ajax/add_genre/', views.add_genre_ajax, name='add_genre_ajax'),
     path('book/<int:book_id>', views.book,name="book"),
+    path('add_review<int:book_id>',views.add_review,name="add_review")
 ]

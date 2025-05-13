@@ -233,8 +233,8 @@ body {
     0 0 15px rgba(255, 215, 0, 0.3);
 }
 .card {
-  opacity: 0;
-  transform: translateY(30px);
+  opacity: 1;
+  transform: translateY(0px);
   transition: all 0.6s ease-in-out;
 }
 
@@ -312,4 +312,16 @@ body {
 @keyframes vanish {
   0% { transform: scale(1); opacity: 1; }
   100% { transform: scale(1.4) rotate(10deg); opacity: 0; }
+}
+.book-card {
+    background-color: rgba(0, 0, 0, 0.5);
+    max-width: 300px;
+    border-radius: 10px;
+    padding: 1rem;
+}
+.book-card h5 {
+    color: white;
+}
+.book-card p {
+    color: #ddd;
 }

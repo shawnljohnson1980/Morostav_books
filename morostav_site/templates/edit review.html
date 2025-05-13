@@ -1,0 +1,103 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Your Review</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/forms.css' %}">
+    <link rel="icon" type="image/x-icon" href="{% static 'img/favicon.webp' %}">
+</head>
+<body>
+    <nav class="navbar navbar-dark bg-dark navbar-expand-md shadow-lg">
+    <div class="container-fluid">
+      <a class="navbar-brand text-white" href="{% url 'home' %}">Welcome to Morostav Books</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navcol-1">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navcol-1">
+        <ul class="navbar-nav ms-auto">
+          {% if request.resolver_match.url_name != 'books_home' %}
+            <li class="nav-item">
+              <a class="nav-link" href="{% url 'books_home' %}">Books</a>
+            </li>
+          {% endif %}
+          {% if request.resolver_match.url_name != 'about' %}
+            <li class="nav-item">
+              <a class="nav-link" href="{% url 'about' %}">About Me</a>
+            </li>
+          {% endif %}
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'calendar' %}">Calendar</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'contact' %}">Contact</a>
+          </li>
+          {% if request.user.is_authenticated %}
+            <li class="nav-item">
+              <a class="nav-link" href="{% url 'logout' %}">Logout</a>
+            </li>
+            {% if request.user.is_staff %}
+              <li class="nav-item">
+                <a class="nav-link" href="{% url 'add_book' %}">Add Book</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="{% url 'dashboard' %}">Admin Dashboard</a>
+              </li>
+            {% endif %}
+          {% else %}
+            {% if request.resolver_match.url_name != 'log_in' %}
+              <li class="nav-item">
+                <a class="nav-link" href="{% url 'to_login' %}">Login</a>
+              </li>
+            {% endif %}
+            {% if request.user.is_authenticated %}
+              <li class="nav-item">
+                <a class="nav-link text-warning" href="{% url 'logout' %}">Logout</a>
+              </li>
+            {% endif %}
+          {% endif %}
+        </ul>
+      </div>
+    </div>
+  </nav>
+    <div style="height: 100px;"></div>
+    <div class="form-container">
+        <form class="border-dark shadow p-3 login-container" method="POST">
+            {% csrf_token %}
+            <p class="text-white border-rider">Edit Your Review</p>
+            <div class="form-group">
+                <label style="color: rgba(80, 43, 128, 0.9);">Rating</label>
+                <div class="star-rating d-flex justify-content-center gap-2">
+                   <input type="radio" id="star5" name="rating" value="5">
+                   <label for="star5">⭐</label>
+
+                   <input type="radio" id="star4" name="rating" value="4">
+                   <label for="star4">⭐</label>
+
+                   <input type="radio" id="star3" name="rating" value="3">
+                   <label for="star3">⭐</label>
+
+                   <input type="radio" id="star2" name="rating" value="2">
+                   <label for="star2">⭐</label>
+
+                   <input type="radio" id="star1" name="rating" value="1">
+                   <label for="star1">⭐</label>
+                   </div>
+            </div>
+            <div class="form-group">
+                <label style="color: rgba(80, 43, 128, 0.9);">Review</label>
+                <textarea class="form-control" name="review" rows="4">{{ review.review }}</textarea>
+            </div>
+            <button type="submit" class="btn text-white mt-3" style="background: rgba(80, 43, 128, 0.6);">Update Review</button>
+        </form>
+    </div>
+    <p class="text-muted">Last updated at: {{ timestamp }}</p>
+</div>
+    <script src="{% static 'js/main.js' %}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" 
+    integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" 
+    crossorigin="anonymous"></script>
+</body>
+</html>

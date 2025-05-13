@@ -179,7 +179,7 @@ def book(request, book_id):
     book = get_object_or_404(Book.objects.annotate(avg_rating=Avg('ratings__rating')), id=book_id)
     latest_reviews = book.ratings.all().order_by('-created_at')[:3]
     total_reviews = book.ratings.count()
-    return render(request, 'book_review.html', {
+    return render(request, 'books.html', {
         'book': book,
         'latest_reviews': latest_reviews,
         'total_reviews': total_reviews,
@@ -187,24 +187,31 @@ def book(request, book_id):
 
 @login_required
 def add_review(request, book_id):
-    """Allows users to leave ONE review & rating per book."""
     book = get_object_or_404(Book, id=book_id)
-    
-    existing_review = Rating.objects.filter(book=book, creator=request.user).first()
-    if existing_review:
-        messages.warning(request, "You've already reviewed this book. Want to update it?")
+
+    if request.method == "POST":
+        existing_review = Rating.objects.filter(book=book, creator=request.user).first()
+        if existing_review:
+            messages.warning(request, "You've already reviewed this book.")
+            return redirect('book', book_id=book.id)
+
+        errors = Rating.objects.validator(request.POST)
+        if errors:
+            for message in errors.values():
+                messages.error(request, message)
+            return redirect('new_review', book_id=book.id)
+
+        Rating.objects.create(
+            book=book,
+            rating=int(request.POST['rating']),
+            review=request.POST['review'],
+            creator=request.user
+        )
+        messages.success(request, "Your review has been submitted!")
         return redirect('book', book_id=book.id)
-    errors = Rating.objects.validator(request.POST)
-    if errors:
-        for message in errors.values():
-            messages.error(request, message)
-        return redirect('book', book_id=book.id)
-    Rating.objects.create(
-        book=book,
-        rating=int(request.POST['rating']),
-        review=request.POST['review'],
-        creator=request.user
-    )
+
+    return render(request, 'add_review.html', {'book': book})
+
 
 @login_required
 def edit_review(request, book_id):
@@ -261,18 +268,27 @@ def about(request):
 
 # Books Homepage (List of Books)
 def books_home(request):
-    books = Book.objects.annotate(avg_rating=Avg('ratings__rating'))  # ✅ Using 'ratings__rating' now
+    books = Book.objects.annotate(avg_rating=Avg('ratings__rating'))
+
+    print(f"📚 Found {books.count()} books")  # DEBUG output
+
     for book in books:
+        print(f"📘 {book.title} (avg rating: {book.avg_rating})")  # DEBUG each book
         book.latest_reviews = book.ratings.all().order_by('-created_at')[:3]
-    return render(request, 'books.html', {'books': books})
+
+    return render(request, 'books_home.html', {
+        'books': books,
+        'timestamp': int(time())
+    })
 
 def calendar_view(request):
     """Display all upcoming events for users."""
     events = Event.objects.order_by('start_time')  # Sort by date
     return render(request, "calendar.html", {"events": events})
 
-def new_review(request):
-    return render(request,'add_review.html')
+def new_review(request,book_id):
+    book = get_object_or_404(Book, id=book_id)
+    return render(request,'add_review.html',{"book": book})
 
 @login_required
 @user_passes_test(is_admin)
