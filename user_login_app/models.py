@@ -5,6 +5,7 @@ from django.http import HttpRequest
 
 class UserManager(BaseUserManager):
     def create_user(self, email, username, first_name, last_name, password, confirm_password=None, **extra_fields):
+        errors={}
         if not email:
             raise ValueError("Users must have an email address")
         if not username:
@@ -13,6 +14,10 @@ class UserManager(BaseUserManager):
             raise ValueError("Username must be between 3 and 30 characters in length.")
         if len(password) < 8 or len(password) > 128:
             raise ValueError("Password must be a minimum of 8 characters in length and no more than 128.")
+        if len(first_name)<2:
+            raise ValueError("First name is required")
+        if len (last_name)<2:
+            raise ValueError("Last name is required")
         if password != confirm_password:
             raise ValueError("Passwords do not match")
         if self.model.objects.filter(email=email).exists():
@@ -24,6 +29,7 @@ class UserManager(BaseUserManager):
             username=username,
             first_name=first_name,
             last_name=last_name,
+            password=password,
             **extra_fields  # <-- This works now because of the new argument
         )
         user.set_password(password)

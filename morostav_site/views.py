@@ -8,6 +8,7 @@ from django.template.loader import render_to_string
 from django.utils.html import strip_tags
 from django.views.decorators.csrf import csrf_exempt
 import json
+from django.contrib.auth import logout
 from django.conf import settings
 from .models import Book, Rating, User, GalleryImage, Genre, Event, ReviewReply, BlockedIP
 from django.views.decorators.http import require_POST
@@ -161,9 +162,6 @@ def add_genre_ajax(request):
             return JsonResponse({"success": True, "genre_id": genre.id, "created": created})  
     return JsonResponse({"success": False})
 
-def log_out(request):
-    request.session.flush()
-    return redirect('home')
 
 def gallery(request):
     return render(request, "gallery.html", {"gallery_images": GalleryImage.objects.all()})

@@ -35,7 +35,7 @@ SECRET_KEY = env("SECRET_KEY", default="fallback-dev-key")
 
 LOGIN_REDIRECT_URL = '/'
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
-DEBUG = env.bool('DEBUG', default= False)
+DEBUG = env.bool('DEBUG', default= True)
 ALLOWED_HOSTS = env.list("DJANGO_ALLOWED_HOSTS", default=[])
 # settings.py
 handler403 = 'your_app.views.custom_permission_denied'

@@ -1,22 +1,49 @@
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.contrib.auth import get_user_model, authenticate, login, logout
-from morostav_site.models import Book,Rating,ReviewReply
-from django.core.mail import send_mail
-from django.conf import settings
+from django.core.mail import send_mail, EmailMultiAlternatives
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
-from django.core.mail import EmailMultiAlternatives
+from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
+from django.utils.encoding import force_bytes
+from django.contrib.auth.tokens import default_token_generator
 from django.contrib.auth.decorators import login_required, user_passes_test
-from django.apps import apps
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
-import json
+from morostav_site.models import Book, Rating, ReviewReply
 from .models import BlockedIP
+import json
 
-
- # Optional: Where users go after logout
 User = get_user_model()
+
+def send_verification_email(request, uidb64, token):
+    try:
+        uid = urlsafe_base64_decode(uidb64).decode()
+        user = User.objects.get(pk=uid)
+    except (User.DoesNotExist, ValueError, OverflowError, TypeError):
+        user = None
+
+    if user and default_token_generator.check_token(user, token):
+        # Already valid; maybe inform user it's been verified already
+        return redirect("home")
+
+    if user:
+        new_token = default_token_generator.make_token(user)
+        new_uid = urlsafe_base64_encode(force_bytes(user.pk))
+        link = f"{request.scheme}://{request.get_host()}/verify_email/{new_uid}/{new_token}/"
+
+        subject = "Verify your email for Morostav Books"
+        message = render_to_string("email/verify_email.html", {
+            "user": user,
+            "verification_link": link,
+            "domain": request.get_host(),
+            "protocol": request.scheme,
+        })
+
+        send_mail(subject, "", settings.DEFAULT_FROM_EMAIL, [user.email], html_message=message)
+
+    return redirect("verified") 
+
 def is_admin(user):
     return user.is_authenticated and user.is_staff
 
@@ -29,46 +56,90 @@ def admin_required(user):
     return bool(user and user.is_authenticated and user.is_staff)
 
 def user_create(request):
-    user_manager = User.objects  # Explicitly reference the manager
-    errors = user_manager.basic_validator(request.POST)  # Call it safely
-    if errors:
-        for k, v in errors.items():
-            messages.error(request, v, extra_tags=k)
-            return redirect('register')
+    if request.method == "POST":
+        user_manager = User.objects
+
+        first_name = request.POST.get('first_name')
+        last_name = request.POST.get('last_name')
+        username = request.POST.get('username')
+        email = request.POST.get('email')
+        password = request.POST.get('password')
+        confirm_password = request.POST.get('confirm_password')
+
+        try:
+            user = user_manager.create_user(
+                email=email,
+                username=username,
+                first_name=first_name,
+                last_name=last_name,
+                password=password,
+                confirm_password=confirm_password,
+            )
+
+            authenticated_user = authenticate(request, username=username, password=password)
+
+            if authenticated_user:
+                login(request, authenticated_user)
+                messages.info(request, f"Account for {username} created successfully!")
+                return redirect('home')
+            else:
+                messages.error(request, "Authentication failed after registration. Please log in manually.")
+                return redirect("to_login")
+
+        except ValueError as ve:
+            messages.error(request, str(ve))
+            uid = urlsafe_base64_encode(force_bytes(user.pk))
+            token = default_token_generator.make_token(user)
+            return redirect("send_verification_email", uidb64=uid, token=token)
+        
+def send_verification_email(request, uidb64, new_token):
+    try:
+        uid = urlsafe_base64_decode(uidb64).decode()
+        user = User.objects.get(pk=uid)
+    except (User.DoesNotExist, ValueError, OverflowError, TypeError):
+        user = None
+
+    if user:
+        new_token = default_token_generator.make_token(user)
+        new_uid = urlsafe_base64_encode(force_bytes(user.pk))
+        link = f"{request.scheme}://{request.get_host()}/verify_email/{new_uid}/{new_token}/"
+
+        subject = "Verify your email for Morostav Books"
+        message = render_to_string("email/verify_email.html", {
+            "user": user,
+            "verification_link": link,
+            "domain": request.get_host(),
+            "protocol": request.scheme,
+        })
+        send_mail(subject, "", settings.DEFAULT_FROM_EMAIL, [user.email], html_message=message)
+
+    messages.info(request, "Verification email sent.")
+    return redirect("home")
+
+def verified(request, uidb64, token):
+    try:
+        uid = urlsafe_base64_decode(uidb64).decode()
+        user = User.objects.get(pk=uid)
+    except (User.DoesNotExist, ValueError, TypeError, OverflowError):
+        user = None
+    if user and default_token_generator.check_token(user, token):
+        user.is_active = True  
+        user.save()
+        messages.success(request, "Email verified successfully!")
+        return render(request, "verify.html")
     else:
-        first_name = request.POST['first_name']
-        last_name = request.POST['last_name']
-        username = request.POST['username']  # Added username field
-        email = request.POST['email']
-        password = request.POST['password']
-        confirm_password = request.POST['confirm_password']
-    user = user_manager.create_user(  
-        username=username,  # Pass username into the model
-        email=email,
-        first_name=first_name,
-        last_name=last_name,
-        password=password,
-        confrim_password=confirm_password
-    )
-    log_in(request, user)
-    messages.info(request, f"Account for {username} created successfully!")
-    return redirect('home')
-
-def to_login(request):
-    return render(request,"login.html")
-
+        messages.error(request, "Invalid or expired verification link.")
+        return redirect("home")
 
 def log_in(request):
     if request.method == "POST":
-        login_identifier = request.POST.get("login_identifier", "").strip()  # Can be email or username
+        login_identifier = request.POST.get("login_identifier", "").strip() 
         password = request.POST.get("password", "").strip()
-        # Ensure fields are not empty
         if not login_identifier or not password:
             messages.error(request, "Please fill in both fields.")
             return redirect("to_login")
-        # Try to authenticate using username/email + password
         user = None
-        if "@" in login_identifier:  # Checking if it's an email
+        if "@" in login_identifier:  
             user = User.objects.filter(email=login_identifier).first()
         else:
             user = User.objects.filter(username=login_identifier).first()
@@ -77,13 +148,12 @@ def log_in(request):
             if authenticated_user:
                 login(request, authenticated_user)
                 messages.success(request, "Login successful!")
-                return redirect("home")  # Redirect to homepage after login
+                return redirect("home")  
             else:
                 messages.error(request, "Incorrect password. Please try again.")
         else:
             messages.error(request, "Username or Email not found.")
-        return redirect("to_login")  # Redirect back to login page on failure
-
+        return redirect("to_login") 
 
 def send_reset_email(user, domain, uid, token):
     subject = "Reset Your Password - Morostav Books"
@@ -101,14 +171,11 @@ def send_reset_email(user, domain, uid, token):
 
 from django.views.decorators.csrf import csrf_exempt
 
-@csrf_exempt  # Needed because sendBeacon skips CSRF
+@csrf_exempt 
 def log_out(request):
     if request.user.is_authenticated:
         logout(request)
-        request.session.flush()
-        return JsonResponse({"message": "Logged out on unload"})
-    return JsonResponse({"message": "No active session"}, status=204)
-
+    return redirect("home")
 
 def password_reset_done(request):
     user = request.user  
@@ -154,7 +221,4 @@ def unban_ip(request):
         except Exception as e:
             return JsonResponse({"success": False, "error": str(e)})
     return JsonResponse({"success": False, "error": "Invalid request"})
-
-
-
 

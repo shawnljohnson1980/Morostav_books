@@ -1,7 +1,8 @@
 from django.urls import path
 from django.contrib.auth import views as auth_views
-from user_login_app import views
+from user_login_app import views as user_views,views
 from morostav_site.urls import dashboard
+
 urlpatterns = [
     path('morostav/dashboard/', views.dashboard, name='dashboard'),  # Admin Dashboard
     path('ban-ip/', views.ban_ip, name='ban_ip'),
@@ -10,7 +11,6 @@ urlpatterns = [
     path('logout/', views.log_out, name='logout'),        # ✅ Fixed Slash Consistency
     path('register/', views.register, name='register'),
     path('new_user/', views.user_create, name='new_user'),
-
     # 🔹 PASSWORD RESET ROUTES
     path('reset/', auth_views.PasswordResetView.as_view(template_name='reset_start.html'), name='password_reset'),
     path('password_reset/done/', auth_views.PasswordResetDoneView.as_view(template_name='reset_done.html'), name='password_reset_done'),
@@ -18,4 +18,7 @@ urlpatterns = [
     path('reset/done/', auth_views.PasswordResetDoneView.as_view(template_name='registration/password_reset_done.html'), name='password_reset_done'),
     # 🔹 LOGIN PAGE REDIRECT
     path('to_login/', views.to_login, name='to_login'),
+    # Email Verification
+    path("send_verification_email/<uidb64>/<token>/", user_views.send_verification_email, name="send_verification_email"),
+    path("verified/<uid64>/<token>/",views.verified,name="verified"),
 ]

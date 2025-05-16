@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Email Verified</title>
+    <meta http-equiv="refresh" content="5;url={% url 'home' %}">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #2e003e, #502b80);
+            color: white;
+            text-align: center;
+            padding-top: 15vh;
+        }
+        .container {
+            background-color: rgba(255, 255, 255, 0.1);
+            padding: 40px;
+            border-radius: 10px;
+            display: inline-block;
+            backdrop-filter: blur(6px);
+        }
+        h1 {
+            font-size: 2em;
+            margin-bottom: 20px;
+        }
+        p {
+            font-size: 1.2em;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>✅ Your email has been verified!</h1>
+        <p>You will be redirected to the homepage in a few seconds...</p>
+        <p>If not, <a href="{% url 'home' %}" style="color: #ffd700;">click here</a>.</p>
+    </div>
+</body>
+</html>

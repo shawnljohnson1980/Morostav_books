@@ -94,7 +94,7 @@
 
         <p class="text-white-50"><strong>Genre:</strong> {{ book.genre.name|default:"Unspecified" }}</p>
         <p class="text-white-50"><strong>ISBN:</strong> {{ book.isbn }}</p>
-
+        <p class="text-white-50">Description{{ book.description }}</p>
         <p class="text-warning mt-2"><strong>Overall Rating:</strong>
           {% if book.avg_rating %}
             {{ book.avg_rating|floatformat:1 }}/5
@@ -128,13 +128,11 @@
       <div class="buy-now-box text-center mt-4">
     <h4>📘 Ready to dive in?</h4>
     <p>Download <strong>Precarious</strong> instantly and take the story with you.</p>
-    <a href="https://payhip.com/b/gE1Hv" class="btn btn-lg btn-primary mt-2">
+    <a href="https://payhip.com/MorostavBooks" class="btn btn-lg btn-primary mt-2">
         📥 Buy eBook – $7.99
     </a>
     <p class="text-muted mt-2">Delivered in ePub format • Read on any device • No DRM</p>
 </div>
-``
-
     </div>
   </div>
 </div>
