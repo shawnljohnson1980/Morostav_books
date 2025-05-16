@@ -116,7 +116,7 @@ def send_verification_email(request, uidb64, new_token):
     messages.info(request, "Verification email sent.")
     return redirect("home")
 
-def verified(request, uidb64, token):
+def verify_email (request, uidb64, token):
     try:
         uid = urlsafe_base64_decode(uidb64).decode()
         user = User.objects.get(pk=uid)
@@ -139,7 +139,7 @@ def log_in(request):
             messages.error(request, "Please fill in both fields.")
             return redirect("to_login")
         user = None
-        if "@" in login_identifier:  
+        if "@" in login_identifier:
             user = User.objects.filter(email=login_identifier).first()
         else:
             user = User.objects.filter(username=login_identifier).first()
