@@ -9,6 +9,7 @@ urlpatterns = [
     path('ban-ip/', views.ban_ip, name='ban_ip'),
 
     # 🔹 LOGIN, LOGOUT & REGISTRATION ROUTES
+    path("to_login",views.to_login,name="to_login"),
     path('log_in/', views.log_in, name='log_in'),         
     path('logout/', views.log_out, name='logout'),        
     path('register/', views.register, name='register'),

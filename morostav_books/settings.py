@@ -112,17 +112,24 @@ def getenv(key, fallback=None, required=False):
         raise Exception(f"Environment variable '{key}' is required but not set.")
     return val
 
+
+env = environ.Env()
+environ.Env.read_env()  # Reads from .env file
+
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql',
+        'ENGINE': 'django.db.backends.mysql',  # ✅ Still MySQL, even for MariaDB
         'NAME': env('DB_NAME'),
         'USER': env('DB_USER'),
         'PASSWORD': env('DB_PASSWORD'),
         'HOST': env('DB_HOST', default='127.0.0.1'),
         'PORT': env('DB_PORT', default='3306'),
+        'OPTIONS': {
+            'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
+            'charset': 'utf8mb4',  # ✅ Full Unicode support (emojis, symbols, etc.)
+        },
     }
 }
-
 
 
 
@@ -137,9 +144,6 @@ DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
 CALDAV_USERNAME = env('CALDAV_USERNAME', default=None)
 CALDAV_PASSWORD = env('CALDAV_PASSWORD', default=None)
-
-
-
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators

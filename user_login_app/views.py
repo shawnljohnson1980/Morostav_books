@@ -55,6 +55,9 @@ def dashboard(request):
 def admin_required(user):
     return bool(user and user.is_authenticated and user.is_staff)
 
+def to_login(request):
+    return render(request,"login.html")
+
 def user_create(request):
     if request.method == "POST":
         user_manager = User.objects
