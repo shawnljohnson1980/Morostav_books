@@ -18,22 +18,16 @@ from django.urls import reverse_lazy
 from django.utils.translation import gettext_lazy as _
 
 BASE_DIR = Path(__file__).resolve().parent.parent
-
 env = environ.Env()
-env.read_env(os.path.join(BASE_DIR, '.env.dev'))
-
-
-
-BASE_DIR = Path(__file__).resolve().parent.parent
-env = environ.Env()
-env.read_env(os.path.join(BASE_DIR, '.env'))
+env_path = os.path.join(BASE_DIR, '.env.dev') 
+env.read_env(env_path)
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 SECRET_KEY = env("SECRET_KEY", default="fallback-dev-key")
 
-LOGIN_REDIRECT_URL = '/'
+LOGIN_REDIRECT_URL = 'home'
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 DEBUG = env.bool('DEBUG', default= True)
 ALLOWED_HOSTS = env.list("DJANGO_ALLOWED_HOSTS", default=[])
@@ -130,7 +124,7 @@ DATABASES = {
         },
     }
 }
-
+print(os.environ.get("DB_NAME"))
 
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'

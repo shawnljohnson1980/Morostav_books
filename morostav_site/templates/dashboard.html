@@ -51,69 +51,68 @@
  <div class="col-md-6 offset-md-1 mt-5">
   <div class="container mt-4">
     <h2 class="text-center">Manage Books & Reviews</h2>
-
-    {% if messages %}
-      <ul class="messages">
-        {% for message in messages %}
-          <li class="alert alert-{{ message.tags }}">{{ message }}</li>
-        {% endfor %}
-      </ul>
-    {% endif %}
-
-    <div class="p-3 shadow mt-4">
-        <h3>Add a New Book</h3>
-        <form id="bookForm" method="POST" enctype="multipart/form-data" action="{% url 'dashboard' %}">
-          {% csrf_token %}
-          <div class="form-group mt-2">
-            <label>Title:</label>
-            <input type="text" class="form-control" name="title" required>
-          </div>
-          <div class="form-group mt-3">
-            <label>Description:</label>
-            <textarea class="form-control" name="description" required></textarea>
-          </div>
-          <div class="form-group mt-3">
-            <label>ISBN:</label>
-            <input type="text" class="form-control" name="isbn">
-          </div>
-          <div class="form-group mt-3">
-            <label>Cover Image:</label>
-            <input type="file" class="form-control" name="cover_image">
-          </div>
-          <div class="form-group mt-3">
-            <label>Genre:</label>
-            <select id="genreSelect" class="form-control" name="genre" onchange="toggleGenreInput()">
-              <option value="">--Select--</option>
-              {% for genre in genres %}
-              <option value="{{ genre.id }}">{{ genre.name }}</option>
-              {% endfor %}
-              <option value="add">Add new</option>
-            </select>
-          </div>
-          <div class="form-group mt-3" id="new_genre" style="display: none;">
-            <label>New Genre:</label>
-            <input type="text" class="form-control" name="new_genre" id="newGenreInput">
-            <button type="button" class="btn btn-info mt-2" onclick="addGenre()">Add Genre</button>
-          </div>
-          <button type="submit" class="btn btn-primary mt-4">Add Book</button>
-          {% if messages %}
-          <ul class="messages mt-3">
-            {% for message in messages %}
+    
+    <form id="bookForm" method="POST" enctype="multipart/form-data" action="{% url 'dashboard' %}">
+      {% csrf_token %}
+      
+      {% if messages %}
+        <ul class="messages">
+          {% for message in messages %}
             <li class="alert alert-{{ message.tags }}">{{ message }}</li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+
+      <div class="p-3 shadow mt-4">
+        <h3>Add a New Book</h3>
+
+        <div class="form-group mt-2">
+          <label>Title:</label>
+          <input type="text" class="form-control" name="title" required>
+        </div>
+
+        <div class="form-group mt-3">
+          <label>Description:</label>
+          <textarea class="form-control" name="description" required></textarea>
+        </div>
+
+        <div class="form-group mt-3">
+          <label>ISBN:</label>
+          <input type="text" class="form-control" name="isbn">
+        </div>
+
+        <div class="form-group mt-3">
+          <label>Cover Image:</label>
+          <input type="file" class="form-control" name="cover_image">
+        </div>
+
+        <div class="form-group mt-3">
+          <label>Genre:</label>
+          <select id="genreSelect" class="form-control" name="genre" onchange="toggleGenreInput()">
+            <option value="">--Select--</option>
+            {% for genre in genres %}
+              <option value="{{ genre.id }}">{{ genre.name }}</option>
             {% endfor %}
-          </ul>
-          {% endif %}
-        </form>
-      </div>
+            <option value="add">Add new</option>
+          </select>
+        </div>
         <div class="form-group mt-3" id="new_genre" style="display: none;">
           <label>New Genre:</label>
           <input type="text" class="form-control" name="new_genre" id="newGenreInput">
           <button type="button" class="btn btn-info mt-2" onclick="addGenre()">Add Genre</button>
         </div>
+         <div class="form-group mt-3">
+          <label>Publish Date:</label>
+          <input type="date" class="form-control" name="publish_date" required>
+         </div>
         <button type="submit" class="btn btn-primary mt-4">Add Book</button>
+        <div class="form-group mt-3" id="new_genre" style="display: none;">
+          <label>New Genre:</label>
+          <input type="text" class="form-control" name="new_genre" id="newGenreInput">
+          <button type="button" class="btn btn-info mt-2" onclick="addGenre()">Add Genre</button>
+        </div>
       </form>
-    </div>
-
+      </div>
     <div class="card p-3 shadow mt-4">
       <h3>Filter Reviews by Rating</h3>
       <select id="reviewFilter" class="form-control" onchange="filterReviews()">

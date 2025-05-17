@@ -1,0 +1,33 @@
+Metadata-Version: 2.1
+Name: aeppl
+Version: 0.1.5
+Summary: PPL tools for Aesara
+Home-page: https://github.com/aesara-devs/aeppl
+Author: aesara-devs
+Author-email: aesara.devs@gmail.com
+License: UNKNOWN
+Keywords: aeppl,math,probability,symbolic,probabilistic programming
+Platform: UNKNOWN
+Classifier: Development Status :: 4 - Beta
+Classifier: Intended Audience :: Science/Research
+Classifier: Intended Audience :: Developers
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+Classifier: Programming Language :: Python
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.8
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Programming Language :: Python :: Implementation :: CPython
+Classifier: Programming Language :: Python :: Implementation :: PyPy
+Requires-Python: >=3.8
+Description-Content-Type: text/x-rst
+Requires-Dist: numpy (>=1.18.1)
+Requires-Dist: scipy (>=1.4.0)
+Requires-Dist: aesara (>=2.8.13)
+Requires-Dist: typing-extensions
+
+UNKNOWN
+
+

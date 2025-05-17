@@ -92,20 +92,22 @@
                   <a href="{% url 'book' book.id %}" class="btn btn-sm btn-outline-light mt-auto">View Book</a>
                 </div>
               </div>
+              
              </div>
-                 {% empty %}
-            <div class="col-12 text-center">
-              <p class="text-light">No books available yet.</p>
-            </div>
-                  
-               </div>
-          </div>
+            {% if book.id %}
             <div class="mt-auto">
-                <a href="{% url 'book' book.id %}" class="btn btn-outline-primary btn-sm w-100">View Book</a>
+              <a href="{% url 'book' book.id %}" class="btn btn-outline-primary btn-sm w-100">View Book</a>
             </div>
+                  {% else %}
+                  <div class="col-12 text-center">
+                    <p class="text-light">No books available yet.</p>
+                  </div>
+                {% endif %}
 
-                <p>No books available at this time. Check back soon!</p>
-            {% endfor %}
+                 <div class="col-12 text-center">
+                   <p class="text-light">No books available yet.</p>
+                 </div>
+                {% endfor %}
             <p class="text-muted text-end mt-4">Last updated at: {{ timestamp }}</p>
         </div>
     </div>

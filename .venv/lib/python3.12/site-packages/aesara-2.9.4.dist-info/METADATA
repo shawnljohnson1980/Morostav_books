@@ -1,0 +1,51 @@
+Metadata-Version: 2.3
+Name: aesara
+Version: 2.9.4
+Summary: A library for defining, optimizing, and efficiently evaluating mathematical expressions involving multi-dimensional arrays.
+Project-URL: Homepage, https://github.com/aesara-devs/aesara
+Author-email: aesara-devs <aesara.devs@gmail.com>
+License: BSD-3-Clause
+License-File: LICENSE.txt
+Keywords: aesara,autodiff,blas,differentiation,math,numerical,numpy,symbolic
+Classifier: Development Status :: 6 - Mature
+Classifier: Intended Audience :: Developers
+Classifier: Intended Audience :: Education
+Classifier: Intended Audience :: Science/Research
+Classifier: License :: OSI Approved :: BSD License
+Classifier: Operating System :: MacOS
+Classifier: Operating System :: MacOS :: MacOS X
+Classifier: Operating System :: Microsoft :: Windows
+Classifier: Operating System :: POSIX
+Classifier: Operating System :: POSIX :: Linux
+Classifier: Operating System :: POSIX :: SunOS/Solaris
+Classifier: Operating System :: Unix
+Classifier: Programming Language :: Python
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.8
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Topic :: Scientific/Engineering :: Mathematics
+Classifier: Topic :: Software Development :: Code Generators
+Classifier: Topic :: Software Development :: Compilers
+Requires-Python: >=3.8
+Requires-Dist: cons
+Requires-Dist: etuples
+Requires-Dist: filelock
+Requires-Dist: logical-unification
+Requires-Dist: minikanren
+Requires-Dist: numpy<2.0.0,>=1.17.0
+Requires-Dist: scipy<=1.12.0,>=0.14
+Requires-Dist: setuptools>=48.0.0
+Requires-Dist: typing-extensions
+Description-Content-Type: text/x-rst
+
+Aesara is a Python library that allows you to define, optimize, and efficiently evaluate mathematical expressions involving multi-dimensional arrays. It is built on top of NumPy_. Aesara features:
+
+ * **tight integration with NumPy:** a similar interface to NumPy's. numpy.ndarrays are also used internally in Aesara-compiled functions.
+ * **efficient symbolic differentiation:** Aesara can compute derivatives for functions of one or many inputs.
+ * **speed and stability optimizations:** avoid nasty bugs when computing expressions such as log(1 + exp(x)) for large values of x.
+ * **dynamic C code generation:** evaluate expressions faster.
+ * **extensive unit-testing and self-verification:** includes tools for detecting and diagnosing bugs and/or potential problems.
+
+.. _NumPy: http://numpy.scipy.org/

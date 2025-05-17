@@ -110,6 +110,7 @@ def dashboard(request,context):
         description = request.POST.get("description")
         isbn = request.POST.get("isbn")
         cover_image = request.FILES.get("cover_image")
+        publish_date = request.POST.get("publish_date")
         genre_id = request.POST.get("genre")
         new_genre_name = request.POST.get("new_genre", "").strip()
         genre = None
@@ -123,6 +124,7 @@ def dashboard(request,context):
             isbn=isbn,
             cover_image=cover_image,
             genre=genre,
+            publish_date=publish_date,
         )
         messages.success(request, "Book added successfully!")
         return redirect("dashboard")
